@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login and Register Buttons</title>
+</head>
+<body>
+  <div style="text-align: center; margin-top: 100px;">
+    Welcome to the MVC Lecture
+    <br />
+    <label for="name">Enter book name:</label>
+    <input type="text" id="name" required>
+  <br>
+
+  <button onclick="submitForm()">Submit</button>
+  </div>
+
+  <script>
+    function submitForm() {
+      const name = document.getElementById('name').value;
+
+      const data = {
+        name: name
+      }
+
+      fetch('/add', {
+        method: 'POST', 
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('API request successful!');
+          window.location.href = '/list'; 
+        } else {
+          console.log('API request failed!');
+        }
+      })
+      .catch(error => {
+        console.error('Error occurred:', error);
+      });
+    }
+  </script>
+</body>
+</html>

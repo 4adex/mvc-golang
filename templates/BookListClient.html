@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Suwannaphum:wght@100;300;400;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShelfMaster</title>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="header-content">
+          <h1 class="logo">ShelfMaster</h1>
+          <div>
+            <button class="logout" onclick="location.href='/'">{{.Username}}</button>
+            <button class="logout" onclick="location.href='/logout'">Logout</button>
+          </div>
+        </div>
+      </header>
+        <div id="alert-message">
+        </div>
+      <main class="main-content">
+        <h1>Library Books</h1>
+        <div class="content">
+          {{if gt (len .Books) 0}}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Books}}
+                        <tr>
+                            <td class="table-td">{{.Title}}</td>
+                            <td class="table-td" id="author">{{.Author}}</td>
+                            {{if gt .AvailableCopies 0}}
+                              <td class="table-td" id="status">
+                                {{.AvailableCopies}} copies available
+                              </td>
+                              <td class="table-td">
+                                <form action="/checkout/{{.ID}}" method="POST">
+                                    <input type="hidden" name="bookId" value="{{.ID}}">
+                                    <button type="submit" class="table-button">
+                                      Checkout
+                                    </button>
+                                </form>
+                            </td>
+                            {{else}}
+                              <td class="table-td" id="unavailable">
+                                unavailable
+                              </td>
+                              <td class="table-td">
+                                <form>
+                                    <input type="hidden" name="bookId" value="{{.ID}}">
+                                    <button type="submit" class="table-button" id="disabled-button" disabled>
+                                      None
+                                    </button>
+                                </form>
+                            </td>
+                            {{end}}
+                        </tr>
+                    {{end}}
+                </tbody>
+            </table>
+          {{else}}
+            <p>No books available in the library.</p>
+          {{end}}
+        </div>
+      </main>
+    </div>
+    <script>
+      // Handle clicks on the logout and checkout buttons
+      document.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelectorAll('.logout').forEach(button => {
+          button.addEventListener('click', (event) => {
+            event.preventDefault();
+            location.href = event.target.getAttribute('onclick').split("'")[1];
+          });
+        });
+
+        document.querySelectorAll('.table-button').forEach(button => {
+          button.addEventListener('click', (event) => {
+            event.preventDefault();
+            if (button.id !== 'disabled-button') {
+              fetch(button.closest('form').action, {
+                method: 'POST',
+                body: new URLSearchParams(new FormData(button.closest('form')))
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  displayMessage('Checkout successful', 'success');
+                } else {
+                  displayMessage('Checkout failed', 'error');
+                }
+              })
+              .catch(error => {
+                displayMessage('An error occurred', 'error');
+              });
+            }
+          });
+        });
+      });
+
+      function displayMessage(msg, type) {
+        const alertDiv = document.getElementById("alert-message");
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.innerText = msg;
+        // document.body.insertBefore(alertDiv, document.body.firstChild);
+
+        // setTimeout(() => {
+        //   alertDiv.remove();
+        // }, 3000);
+      }
+    </script>
+  </body>
+</html>

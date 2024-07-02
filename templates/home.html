@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Suwannaphum:wght@100;300;400;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShelfMaster</title>
+    <script>
+      async function handleAction(url) {
+        try {
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          // const result = await response.json();
+          // Handle success (redirect or update UI)
+          window.location.href = url;
+        } catch (error) {
+          // Handle error
+          console.error('There has been a problem with your fetch operation:', error);
+          alert('An error occurred: ' + error.message);
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="header-content">
+          <h1 class="logo">ShelfMaster</h1>
+          <button class="logout" onclick="handleAction('/logout')">Logout</button>
+        </div>
+      </header>
+        <div class="alert" id="message">
+        </div>
+      <main class="main-content">
+        <h2 class="user-call">hello {{.Username}}!</h2>
+        <h1>Welcome to Library!</h1>
+        <div class="button-group">
+          <button onclick="handleAction('/viewbooks')">View Books</button>
+          <button onclick="handleAction('/history')">View History</button>
+          <button onclick="handleAction('/reqadmin')">Admin Request</button>
+          <button onclick="handleAction('/viewholdings')">View Holdings</button>
+          {{if eq .Role "admin"}}
+            <button onclick="handleAction('/admin')">Admin Portal</button>
+          {{end}}
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
