@@ -31,14 +31,12 @@
       <main class="main-content">
         <h2 class="user-call">hello {{.Username}}!</h2>
         <h1>Welcome to Library!</h1>
+        <h2 class="user-call"> Admin Portal</h2>
         <div class="button-group">
           <button onclick="HandleGet('/viewbooks')">View Books</button>
-          <button onclick="HandleGet('/history')">View History</button>
-          <button onclick="HandleGet('/reqadmin')">Admin Request</button>
-          <button onclick="HandleGet('/viewholdings')">View Holdings</button>
-          {{if eq .Role "admin"}}
-            <button onclick="HandleGet('/admin')">Admin Portal</button>
-          {{end}}
+          <button onclick="HandleGet('/history')">Checkin/Checkout Requests</button>
+          <button onclick="HandleGet('/reqadmin')">View Admin Requests</button>
+          <button onclick="HandleGet('/viewholdings')">Add Books</button>
         </div>
       </main>
     </div>

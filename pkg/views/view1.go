@@ -24,3 +24,24 @@ func Signup() *template.Template {
 	temp := template.Must(template.ParseFiles("templates/SignUp.html"))
 	return temp
 }
+
+func HistoryListClient() *template.Template {
+	temp := template.Must(template.ParseFiles("templates/ViewHistory.html"))
+	return temp
+}
+
+func HoldingsClient() *template.Template {
+    temp := template.Must(template.ParseFiles("templates/viewholdings.html"))
+    return temp
+}
+
+func ReqAdmin() *template.Template {
+	temp := template.Must(template.ParseFiles("templates/reqAdmin.html"))
+	return temp
+}
+
+func AdminHome() *template.Template {
+	temp := template.Must(template.ParseFiles("templates/AdminHome.html"))
+	return temp
+}
+

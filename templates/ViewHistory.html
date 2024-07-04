@@ -32,38 +32,39 @@
         {{end}}
       {{end}}
       <main class="main-content">
-        <h1>Library Books</h1>
+        <h1>User History Log</h1>
         <div class="content">
-          {{if gt (len .Books) 0}}
+          {{if gt (len .Transactions) 0}}
             <table>
                 <thead>
                     <tr>
                         <th>Title</th>
-                        <th>Author</th>
                         <th>Status</th>
+                        <th>Checkout Date</th>
+                        <th>Return Date</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{range .Books}}
+                    {{range .Transactions}}
                         <tr>
                             <td class="table-td">{{.Title}}</td>
-                            <td class="table-td" id="author">{{.Author}}</td>
+                            <td class="table-td">{{.Status}}</td>
+                            <td class="table-td" id="date">{{.CheckoutTime}}</td>
+                            {{if .CheckinTime}}
+                              <td class="table-td" id="date">{{.CheckinTime}}</td>
+                            {{else}}
+                              <td class="table-td" id="date">N.A.</td>
+                            {{end}}
                             
-                              {{if gt .AvailableCopies 0}}
-                                <td class="table-td" id="status">
-                               {{.AvailableCopies}} copies available
-                              </td>
+                              {{if eq .Status "checkout_accepted"}}
                               <td class="table-td">
-                                <button class="table-button" onclick="HandlePost('/checkout/{{.ID}}')">Checkout</button>
-                            </td>
-                              {{else}}
-                                <td class="table-td" id="unavailable">
-                                unavailable
+                                <button onclick="HandlePost('/checkin/{{.TransactionID}}')" class="table-button">Checkin</button>
                               </td>
+                              {{else}}
                               <td class="table-td">
                                 <button class="table-button" id="disabled-button" disabled>None</button>
-                            </td>
+                              </td>
                               {{end}}
                             
                         </tr>
@@ -71,7 +72,7 @@
                 </tbody>
             </table>
         {{else}}
-            <p>No books available in the library.</p>
+            <p>No transactions found for the user.</p>
         {{end}}
         </div>
       </main>

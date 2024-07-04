@@ -32,47 +32,34 @@
         {{end}}
       {{end}}
       <main class="main-content">
-        <h1>Library Books</h1>
+        <h1>Your Holdings</h1>
         <div class="content">
-          {{if gt (len .Books) 0}}
+          {{if gt (len .Transactions) 0}}
             <table>
                 <thead>
                     <tr>
                         <th>Title</th>
                         <th>Author</th>
-                        <th>Status</th>
+                        <th>Checkout Date</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{range .Books}}
+                    {{range .Transactions}}
                         <tr>
                             <td class="table-td">{{.Title}}</td>
-                            <td class="table-td" id="author">{{.Author}}</td>
-                            
-                              {{if gt .AvailableCopies 0}}
-                                <td class="table-td" id="status">
-                               {{.AvailableCopies}} copies available
-                              </td>
-                              <td class="table-td">
-                                <button class="table-button" onclick="HandlePost('/checkout/{{.ID}}')">Checkout</button>
-                            </td>
-                              {{else}}
-                                <td class="table-td" id="unavailable">
-                                unavailable
-                              </td>
-                              <td class="table-td">
-                                <button class="table-button" id="disabled-button" disabled>None</button>
-                            </td>
-                              {{end}}
-                            
+                            <td class="table-td">{{.Author}}</td>
+                            <td class="table-td" id="date">{{.CheckoutTime}}</td>
+                            <td class="table-td">
+                              <button onclick="HandlePost('/checkin/{{.TransactionID}}')" class="table-button">Checkin</button>
+                          </td>
                         </tr>
                     {{end}}
                 </tbody>
             </table>
-        {{else}}
-            <p>No books available in the library.</p>
-        {{end}}
+          {{else}}
+            <p>No books checked out by you.</p>
+          {{end}}
         </div>
       </main>
     </div>

@@ -1,6 +1,9 @@
 package types
 
-import "time"
+import (
+	"database/sql"
+	// "time"
+)
 
 
 type User struct {
@@ -29,10 +32,25 @@ type Response struct {
 }
 
 type Transaction struct {
-    TransactionID int       `json:"transaction_id"`
-    UserID        int       `json:"user_id"`
-    BookID        int       `json:"book_id"`
+    TransactionID string       `json:"transaction_id"`
+    UserID        string       `json:"user_id"`
+    BookID        string       `json:"book_id"`
     Status        string    `json:"status"`
-    CheckoutTime  time.Time `json:"checkout_time"`
-    CheckinTime   time.Time `json:"checkin_time"`
+    CheckoutTime  string `json:"checkout_time"`
+    CheckinTime   sql.NullString `json:"checkin_time"`
+}
+
+type History struct {
+	TransactionID string
+	Title         string
+	Status        string
+	CheckoutTime  string
+	CheckinTime   string
+}
+
+type Holding struct {
+    TransactionID string
+    Title         string
+    Author        string
+    CheckoutTime  string
 }

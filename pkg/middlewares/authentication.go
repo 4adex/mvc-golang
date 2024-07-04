@@ -4,6 +4,7 @@ import (
     "context"
     "net/http"
     "github.com/4adex/mvc-golang/pkg/jwtutils"
+    // "github.com/4adex/mvc-golang/pkg/messages"
 )
 
 
@@ -37,6 +38,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
         ctx := context.WithValue(r.Context(), "username", claims.Username)
         ctx = context.WithValue(ctx, "email", claims.Email)
         ctx = context.WithValue(ctx, "role", claims.Role)
+        ctx = context.WithValue(ctx,"id",claims.Id)
         r = r.WithContext(ctx)
 
         next.ServeHTTP(w, r)
@@ -74,4 +76,7 @@ func AdminMiddleware(next http.Handler) http.Handler {
         next.ServeHTTP(w, r)
     })
 }
+
+
+
 

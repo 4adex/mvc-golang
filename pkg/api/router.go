@@ -15,6 +15,11 @@ func Start() {
 	r.HandleFunc("/", controller.RenderHome).Methods("GET")
 	r.HandleFunc("/viewbooks", controller.HandleViewBooks).Methods("GET")
 	r.HandleFunc("/checkout/{id}", controller.CheckoutHandler).Methods("POST")
+	r.HandleFunc("/history", controller.HandleViewHistory).Methods("GET")
+	r.HandleFunc("/viewholdings", controller.HandleViewHoldings).Methods("GET")
+	r.HandleFunc("/checkin/{id}", controller.HandleCheckin).Methods("POST")
+	r.HandleFunc("/reqadmin", controller.RenderReqAdmin).Methods("GET")
+	r.HandleFunc("/reqadmin", controller.HandleAdminRequest).Methods("POST")
 
 	r.HandleFunc("/signin", controller.RenderSignin).Methods("GET")
 	r.HandleFunc("/signin", controller.SignInHandler).Methods("POST")
@@ -22,6 +27,7 @@ func Start() {
 	r.HandleFunc("/signup", controller.SignUpHandler).Methods("POST")
 	r.HandleFunc("/logout", controller.HandleLogout).Methods("POST")
 	r.Use(middleware.AuthMiddleware)
+	// r.Use(middleware.FlashMiddleware)
 
 	//first create list books route
 

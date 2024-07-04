@@ -18,7 +18,10 @@
       <header>
         <div class="header-content">
           <h1 class="logo">ShelfMaster</h1>
-          <button class="logout" onclick="logout()">Logout</button>
+          <div>
+            <button class="logout" onclick="HandleGet('/')">{{.Username}}</button>
+            <button class="logout" onclick="logout()">Logout</button>
+          </div>
         </div>
       </header>
       {{if .msg}}
@@ -29,16 +32,9 @@
         {{end}}
       {{end}}
       <main class="main-content">
-        <h2 class="user-call">hello {{.Username}}!</h2>
-        <h1>Welcome to Library!</h1>
-        <div class="button-group">
-          <button onclick="HandleGet('/viewbooks')">View Books</button>
-          <button onclick="HandleGet('/history')">View History</button>
-          <button onclick="HandleGet('/reqadmin')">Admin Request</button>
-          <button onclick="HandleGet('/viewholdings')">View Holdings</button>
-          {{if eq .Role "admin"}}
-            <button onclick="HandleGet('/admin')">Admin Portal</button>
-          {{end}}
+        <h1>Request Admin</h1>
+        <div class="content">
+            <button class="admin-button" onclick="HandlePost('/reqadmin')">Request Admin</button>
         </div>
       </main>
     </div>

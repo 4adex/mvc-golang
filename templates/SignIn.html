@@ -2,79 +2,73 @@
 <html lang="en">
 
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Suwannaphum:wght@100;300;400;700;900&display=swap"
-        rel="stylesheet" />
-    <link rel="stylesheet" href="/static/css/styles.css" />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ShelfMaster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Suwannaphum:wght@100;300;400;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShelfMaster</title>
+  <script src="/static/scripts/script.js"></script>
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <h1 class="logo">ShelfMaster</h1>
-                <div>
-                    <button class="logout" onclick="location.href='/signup'">Signup</button>
-                    <button class="logout" onclick="location.href='/signin'">Login</button>
-                </div>
-            </div>
-        </header>
-        <main class="main-content">
-            <h1>Login</h1>
-            <div class="button-group">
-                <form id="signin-form">
-                    <div class="form-element">
-                        <label class="form-label">Username</label>
-                        <input type="text" name="username" placeholder="Enter username" required />
-                    </div>
-                    <div class="form-element">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="password" placeholder="Password" required />
-                    </div>
-                    <button class="submit-button" type="submit">Submit</button>
-                </form>
-                <div id="error-message" class="error-message"></div>
-            </div>
-        </main>
-    </div>
-
-    <script>
-        document.getElementById('signin-form').addEventListener('submit', async function (event) {
-            event.preventDefault();
-
-            const form = event.target;
-            const formData = new FormData(form);
-            const params = new URLSearchParams();
-
-            formData.forEach((value, key) => {
-                params.append(key, value);
-            });
-
-            try {
-                const response = await fetch('/signin', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: params,
-                });
-
-                if (response.ok) {
-                    window.location.href = '/'; // Redirect to a success page or dashboard
-                } else {
-                    const result = await response.json();
-                    document.getElementById('error-message').textContent = result.message || 'Login failed. Please try again.';
-                }
-            } catch (error) {
-                document.getElementById('error-message').textContent = 'An error occurred. Please try again.';
-            }
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1 class="logo">ShelfMaster</h1>
+        <div>
+          <button class="logout" onclick="HandleGet('/signup')">Signup</button>
+          <button class="logout" onclick="HandleGet('/signin')">Login</button>
+        </div>
+      </div>
+    </header>
+    {{if .msg}}
+    {{if eq .msgType "success"}}
+    <div class="alert alert-success">{{.msg}}</div>
+    {{else}}
+    <div class="alert alert-error">{{.msg}}</div>
+    {{end}}
+    {{end}}
+    <main class="main-content">
+      <h1>Login</h1>
+      <div class="button-group">
+        <form id="loginForm">
+          <div class="form-element">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" placeholder="Enter username" required />
+          </div>
+          <div class="form-element">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" placeholder="Password" required />
+          </div>
+          <button class="submit-button" type="submit">Submit</button>
+        </form>
+      </div>
+    </main>
+  </div>
+  <script>
+    document.getElementById('loginForm').onsubmit = async function (event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      try {
+        const response = await fetch('/signin', {
+          method: 'POST',
+          body: new URLSearchParams(formData),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         });
-
-    </script>
+        const data = await response.json();
+        if (data.redirect) {
+          window.location.href = data.redirect;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+  </script>
 </body>
 
 </html>

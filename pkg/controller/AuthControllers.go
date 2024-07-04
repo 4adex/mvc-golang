@@ -1,52 +1,58 @@
 package controller
 
 import (
-	// "fmt"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
-	"encoding/json"
+
 	"github.com/4adex/mvc-golang/pkg/jwtutils"
+	"github.com/4adex/mvc-golang/pkg/messages"
 	"github.com/4adex/mvc-golang/pkg/models"
 	"github.com/4adex/mvc-golang/pkg/types"
 	"github.com/4adex/mvc-golang/pkg/views"
 	"golang.org/x/crypto/bcrypt"
-	// "github.com/4adex/mvc-golang/pkg/views"
 )
 
 func RenderSignin(w http.ResponseWriter, r *http.Request) {
-	// Implementation for rendering the sign-in page
 	t := views.Signin()
-	t.Execute(w, nil)
+	msg, msgType := messages.GetFlash(w, r)
+	fmt.Println("Messages are", msg, msgType)
+	data := make(map[string]interface{})
+	data["msg"] = msg
+	data["msgType"] = msgType
+	t.Execute(w, data)
 }
 
 func RenderSignup(w http.ResponseWriter, r *http.Request) {
-	// Implementation for rendering the sign-in page
 	t := views.Signup()
-	t.Execute(w, nil)
+	msg, msgType := messages.GetFlash(w, r)
+	fmt.Println("Messages are", msg, msgType)
+	data := make(map[string]interface{})
+	data["msg"] = msg
+	data["msgType"] = msgType
+	t.Execute(w, data)
 }
 
-func HandleLogout(w http.ResponseWriter, r *http.Request){
-	//Clearing the cookies does the job right, and maybe redirection is also needed
-	w.Header().Set("Content-Type", "application/json")
+func HandleLogout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
-		Name: "token",
-		Value: "",
+		Name:   "token",
+		Value:  " ",
 		MaxAge: -1,
 	})
-	res := types.Response{
-		Message: "Logout Successful",
-		Type: "success",
-	}
-	json.NewEncoder(w).Encode(res)
-
+	messages.SetFlash(w, r, "Logout Successful", "success")
+	jsonResponse(w, http.StatusOK, "/signin")
+	// http.Redirect(w, r, "/signin", http.StatusSeeOther) // 303 See Other
 }
 
 func SignInHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		log.Printf("Error parsing form: %v", err)
-		http.Error(w, "Unable to parse form", http.StatusBadRequest)
+		messages.SetFlash(w, r, "Unable to parse form successfully", "error")
+		jsonResponse(w, http.StatusInternalServerError, "/signin")
+		// http.Redirect(w, r, "/signin", http.StatusSeeOther) // 303 See Other
 		return
 	}
 
@@ -56,21 +62,27 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := models.GetUser(username)
 	if err != nil {
 		log.Printf("Error retrieving user: %v", err)
-		http.Error(w, "User not found", http.StatusUnauthorized)
+		messages.SetFlash(w, r, "User not found", "error")
+		jsonResponse(w, http.StatusNotFound, "/")
+		// http.Redirect(w, r, "/signin", http.StatusSeeOther) // 303 See Other
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
 		log.Printf("Error comparing password: %v", err)
-		http.Error(w, "Invalid password", http.StatusUnauthorized)
+		messages.SetFlash(w, r, "Invalid Password", "error")
+		jsonResponse(w, http.StatusUnauthorized, "/signin")
+		// http.Redirect(w, r, "/signin", http.StatusSeeOther) // 303 See Other
 		return
 	}
 
-	token, err := jwtutils.GenerateJWT(user.Username, user.Email, user.Role)
+	token, err := jwtutils.GenerateJWT(user.Username, user.Email, user.Role, strconv.Itoa(user.ID))
 	if err != nil {
 		log.Printf("Error generating token: %v", err)
-		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		messages.SetFlash(w, r, "Error Generating Token", "error")
+		jsonResponse(w, http.StatusInternalServerError, "/signin")
+		// http.Redirect(w, r, "/signin", http.StatusSeeOther) // 303 See Other
 		return
 	}
 
@@ -80,9 +92,10 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
 		Expires: time.Now().Add(24 * time.Hour),
 	})
 
-	w.WriteHeader(http.StatusOK)
+	messages.SetFlash(w, r, "Logged In Successfully", "success")
+	jsonResponse(w, http.StatusOK, "/")
+	// http.Redirect(w, r, "/", http.StatusSeeOther) // 303 See Other
 }
-
 
 func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	var user types.User
@@ -90,7 +103,9 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		log.Printf("Error parsing form: %v", err)
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		messages.SetFlash(w, r, "Unable to parse form successfully", "error")
+		jsonResponse(w, http.StatusInternalServerError, "/signup")
+		// http.Redirect(w, r, "/signup", http.StatusSeeOther) // 303 See Other
 		return
 	}
 
@@ -103,7 +118,9 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		log.Printf("Error hashing password: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		messages.SetFlash(w, r, "Internal Server Error", "error")
+		jsonResponse(w, http.StatusInternalServerError, "/signup")
+		// http.Redirect(w, r, "/signup", http.StatusSeeOther) // 303 See Other
 		return
 	}
 
@@ -111,14 +128,18 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	err = models.CreateUser(user)
 	if err != nil {
 		log.Printf("Error creating user: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		messages.SetFlash(w, r, "Internal Server Error", "error")
+		jsonResponse(w, http.StatusInternalServerError, "/signup")
+		// http.Redirect(w, r, "/signup", http.StatusSeeOther) // 303 See Other
 		return
 	}
 
-	token, err := jwtutils.GenerateJWT(user.Username, user.Email, user.Role)
+	token, err := jwtutils.GenerateJWT(user.Username, user.Email, user.Role, strconv.Itoa(user.ID))
 	if err != nil {
 		log.Printf("Error generating JWT: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		messages.SetFlash(w, r, "Internal Server Error", "error")
+		jsonResponse(w, http.StatusInternalServerError, "/signup")
+		// http.Redirect(w, r, "/signup", http.StatusSeeOther) // 303 See Other
 		return
 	}
 
@@ -128,5 +149,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		Expires: time.Now().Add(24 * time.Hour),
 	})
 
-	w.WriteHeader(http.StatusOK)
+	messages.SetFlash(w, r, "Profile Created Successfully", "success")
+	jsonResponse(w, http.StatusOK, "/")
+	// http.Redirect(w, r, "/", http.StatusSeeOther) // 303 See Other
 }
