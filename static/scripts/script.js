@@ -46,3 +46,39 @@ async function HandlePost(path) {
         window.location.href = data.redirect;
     }
 }
+
+async function UpdateBook(id) {
+    const response = await fetch('/admin/update/'+id, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok){
+        window.location.href = '/admin/update/'+id;
+    } else {
+        const data = await response.json();
+        if (data.redirect) {
+            window.location.href = data.redirect;
+        }
+    }  
+}
+
+
+async function DeleteBook(id) {
+    // alert("Aaaaaa");
+    const response = await fetch('/admin/delete/'+id, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    const data = await response.json();
+    if (data.redirect) {
+        window.location.href = data.redirect;
+    }
+    
+}
+

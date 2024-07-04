@@ -1,12 +1,24 @@
 package middleware
 
 import (
-    "context"
-    "net/http"
-    "github.com/4adex/mvc-golang/pkg/jwtutils"
-    // "github.com/4adex/mvc-golang/pkg/messages"
+	"context"
+	"encoding/json"
+	// "fmt"
+	"net/http"
+
+	"github.com/4adex/mvc-golang/pkg/jwtutils"
+	"github.com/4adex/mvc-golang/pkg/messages"
 )
 
+
+func jsonResponse(w http.ResponseWriter, status int, redirect string) {
+	response := map[string]string{
+		"redirect": redirect,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(response)
+}
 
 func AuthMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -19,6 +31,8 @@ func AuthMiddleware(next http.Handler) http.Handler {
         cookie, err := r.Cookie("token")
         if err != nil {
             if err == http.ErrNoCookie {
+                messages.SetFlash(w, r, "Please Login First", "error")
+                // jsonResponse(w, http.StatusInternalServerError, "/viewbooks")
                 // Redirect to sign-in page
                 http.Redirect(w, r, "/signin", http.StatusSeeOther)
                 return
@@ -31,6 +45,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
         claims, err := jwtutils.ValidateJWT(tokenStr)
         if err != nil {
             // Redirect to sign-in page
+            messages.SetFlash(w, r, "Unauthorized Access", "error")
             http.Redirect(w, r, "/signin", http.StatusSeeOther)
             return
         }
@@ -51,25 +66,11 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 func AdminMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        tokenCookie, err := r.Cookie("token")
-        if err != nil {
-            if err == http.ErrNoCookie {
-                w.WriteHeader(http.StatusUnauthorized)
-                return
-            }
-            w.WriteHeader(http.StatusBadRequest)
-            return
-        }
-
-        tokenStr := tokenCookie.Value
-        claims, err := jwtutils.ValidateJWT(tokenStr)
-        if err != nil {
-            w.WriteHeader(http.StatusUnauthorized)
-            return
-        }
-
-        if claims.Role != "admin" {
-            w.WriteHeader(http.StatusForbidden)
+        role := r.Context().Value("role").(string)
+        // fmt.Println("Role is", role)
+        if role != "admin" {
+            messages.SetFlash(w, r, "Unauthorized Access", "error")
+            http.Redirect(w, r, "/", http.StatusSeeOther)
             return
         }
 

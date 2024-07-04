@@ -32,35 +32,35 @@
         {{end}}
       {{end}}
       <main class="main-content">
-        <h1>Add New Book</h1>
+        <h1>Update Book</h1>
         <div class="button-group">
             <form id="addbookForm">
                 <div class="form-element">
                   <label class="form-label">Title</label>
-                  <input type="text" id="title" name="title" placeholder="Book Title" required/>
+                  <input type="text" id="title" name="title" value="{{.Book.Title}}" required/>
                 </div>
                 <div class="form-element">
                   <label class="form-label">Author</label>
                   <input
-                  type="text" id="author" name="author" placeholder="Book Author" required
+                  type="text" id="author" name="author" value="{{.Book.Author}}" required
                   />
                 </div>
                 <div class="form-element">
                   <label class="form-label">ISBN</label>
                   <input
-                  type="text" id="isbn" name="isbn" placeholder="Book ISBN" required
+                  type="text" id="isbn" name="isbn" value="{{.Book.ISBN}}" required
                   />
                 </div>
                 <div class="form-element">
                   <label class="form-label">Publication Year</label>
                   <input
-                  type="number" id="publication_year" name="publication_year" placeholder="Publication Year" required
+                  type="number" id="publication_year" name="publication_year" value="{{.Book.PublicationYear}}" required
                   />
                 </div>
                 <div class="form-element">
                   <label class="form-label">Total Copies</label>
                   <input
-                  type="number" id="total_copies" name="total_copies" placeholder="Total Copies" required
+                  type="number" id="total_copies" name="total_copies" value="{{.Book.TotalCopies}}" required
                   />
                 </div>
                 <button class="submit-button" type="submit">Submit</button>
@@ -73,7 +73,7 @@
         event.preventDefault();
         const formData = new FormData(this);
         try {
-          const response = await fetch('/admin/addbook', {
+          const response = await fetch('/admin/update/{{.Book.ID}}', {
             method: 'POST',
             body: new URLSearchParams(formData),
             headers: {

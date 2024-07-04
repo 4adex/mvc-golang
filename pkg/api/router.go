@@ -26,13 +26,30 @@ func Start() {
 	r.HandleFunc("/signup",controller.RenderSignup).Methods("GET")
 	r.HandleFunc("/signup", controller.SignUpHandler).Methods("POST")
 	r.HandleFunc("/logout", controller.HandleLogout).Methods("POST")
-	r.Use(middleware.AuthMiddleware)
+	r.Use(middleware.AuthMiddleware) 
 	// r.Use(middleware.FlashMiddleware)
 
 	//first create list books route
 
 	//separate router for admin routes and its middleware with it
 	adminRouter := r.PathPrefix("/admin").Subrouter()
+	adminRouter.HandleFunc("/dashboard", controller.RenderAdminHome).Methods("GET")
+	adminRouter.HandleFunc("/viewbooks", controller.RenderBooksAdmin).Methods("GET")
+	adminRouter.HandleFunc("/update/{id}",controller.RenderUpdateBook).Methods("GET")
+	adminRouter.HandleFunc("/update/{id}",controller.HandleUpdateBook).Methods("POST")
+	adminRouter.HandleFunc("/delete/{id}",controller.HandleDeleteBook).Methods("POST")
+	adminRouter.HandleFunc("/viewrequests",controller.RenderViewRequests).Methods("GET")
+	adminRouter.HandleFunc("/transaction/{id}/{action}",controller.HandleTransactionAction).Methods("POST")
+	// adminRouter.HandleFunc("/addbook",).Methods("GET")
+	// adminRouter.HandleFunc("/addbook",).Methods("POST")
+	// adminRouter.HandleFunc("/adminrequests",).Methods("GET")
+	// adminRouter.HandleFunc("/adminrequest/accept/{id}",).Methods("POST")
+	// adminRouter.HandleFunc("/adminrequest/reject/{id}",).Methods("POST")
+
+
+
+
+
 	adminRouter.Use(middleware.AuthMiddleware)
     adminRouter.Use(middleware.AdminMiddleware)
 

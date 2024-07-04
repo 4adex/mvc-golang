@@ -25,11 +25,14 @@ func jsonResponse(w http.ResponseWriter, status int, redirect string) {
 
 func RenderHome(w http.ResponseWriter, r *http.Request) {
 	var username string = r.Context().Value("username").(string)
+	role := r.Context().Value("role").(string)
 	msg, msgType := messages.GetFlash(w, r)
 	fmt.Println("Messages are", msg, msgType)
 	data := make(map[string]interface{})
 	data["Username"] = username
 	data["msg"] = msg
+	data["Role"] = role
+	fmt.Println("Role is", role)
 	data["msgType"] = msgType
 	t := views.HomePage()
 	t.Execute(w, data)
@@ -66,7 +69,6 @@ func HandleViewBooks(w http.ResponseWriter, r *http.Request) {
 	data["Books"] = books
 	data["msg"] = msg
 	data["msgType"] = msgType
-	fmt.Println(data)
 
 	t := views.BooksListClient()
 	t.Execute(w, data)

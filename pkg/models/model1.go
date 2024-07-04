@@ -204,4 +204,174 @@ func UpdateUserRequestStatus(userID string, status string) error {
 }
 
 
+func GetBookByID(bookID int) (types.Book, error) {
+	var book types.Book
+	db, err := Connection()
+    if err != nil {
+        return book,err
+    }
+    defer db.Close()
+    query := "SELECT * FROM books WHERE id = ?"
+    err = db.QueryRow(query, bookID).Scan(&book.ID, &book.Title, &book.Author, &book.ISBN, &book.PublicationYear, &book.TotalCopies, &book.AvailableCopies)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return book, fmt.Errorf("book not found")
+        }
+        return book, err
+    }
+    return book, nil
+}
 
+
+
+func UpdateBook(bookID, title, author, isbn, publicationYear string) error {
+    db, err := Connection()
+    if err != nil {
+        return err
+    }
+    defer db.Close()
+
+    query := `
+      UPDATE books
+      SET title = ?, author = ?, isbn = ?, publication_year = ? 
+      WHERE id = ?
+    `
+    result, err := db.Exec(query, title, author, isbn, publicationYear, bookID)
+    if err != nil {
+        return err
+    }
+
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        return err
+    }
+
+    if rowsAffected == 0 {
+        return sql.ErrNoRows
+    }
+
+    return nil
+}
+
+
+func IsBookCheckedOut(bookID string) (bool, error) {
+    db, err := Connection()
+    if err != nil {
+        return false, err
+    }
+    defer db.Close()
+
+    query := "SELECT COUNT(*) AS count FROM transactions WHERE book_id = ? AND status = 'checkout_accepted'"
+    var count int
+    err = db.QueryRow(query, bookID).Scan(&count)
+    if err != nil {
+        return false, err
+    }
+
+    return count > 0, nil
+}
+
+func DeleteTransactionsByBookID(bookID string) error {
+    db, err := Connection()
+    if err != nil {
+        return err
+    }
+    defer db.Close()
+
+    query := "DELETE FROM transactions WHERE book_id = ?"
+    _, err = db.Exec(query, bookID)
+    return err
+}
+
+func DeleteBookByID(bookID string) error {
+    db, err := Connection()
+    if err != nil {
+        return err
+    }
+    defer db.Close()
+
+    query := "DELETE FROM books WHERE id = ?"
+    result, err := db.Exec(query, bookID)
+    if err != nil {
+        return err
+    }
+
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        return err
+    }
+
+    if rowsAffected == 0 {
+        return sql.ErrNoRows
+    }
+
+    return nil
+}
+
+
+
+func GetPendingTransactions(userID string) ([]types.PendingTransaction, error) {
+    db, err := Connection()
+    if err != nil {
+        return nil, err
+    }
+    defer db.Close()
+
+    query := `
+      SELECT t.transaction_id, b.title, t.status, t.checkout_time, t.checkin_time
+      FROM transactions t
+      JOIN books b ON t.book_id = b.id
+      WHERE t.status NOT IN ('checkout_rejected', 'checkin_rejected', 'returned', 'checkout_accepted')
+      AND t.user_id = ?
+    `
+
+    rows, err := db.Query(query, userID)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var transactions []types.PendingTransaction
+    for rows.Next() {
+        var transaction types.PendingTransaction
+        err := rows.Scan(&transaction.TransactionID, &transaction.Title, &transaction.Status, &transaction.CheckoutTime, &transaction.CheckinTime)
+        if err != nil {
+            return nil, err
+        }
+        transactions = append(transactions, transaction)
+    }
+
+    return transactions, nil
+}
+
+
+func UpdateBookAvailability(bookID string, query string) (sql.Result, error) {
+	db, err := Connection()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	result, err := db.Exec(query, bookID)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func UpdateTransactionStatusAdmin(transactionID string, status string) error {
+	db, err := Connection()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	query := "UPDATE transactions SET status = ? WHERE transaction_id = ?"
+	_, err = db.Exec(query, status, transactionID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

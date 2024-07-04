@@ -45,3 +45,25 @@ func AdminHome() *template.Template {
 	return temp
 }
 
+func BooksListAdmin() *template.Template {
+	temp := template.Must(template.ParseFiles("templates/BookListAdmin.html"))
+	return temp
+}
+
+func UpdateBook() *template.Template {
+	temp := template.Must(template.ParseFiles("templates/AdminUpdateBook.html"))
+	return temp
+}
+
+func AddBook() *template.Template {
+	temp := template.Must(template.ParseFiles("templates/AdminAddBook.html"))
+	return temp
+}
+
+func ViewRequests() *template.Template {
+    temp := template.Must(template.ParseFiles("templates/ViewCCRequests.html"))
+    return temp
+}
+
+
+

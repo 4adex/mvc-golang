@@ -40,6 +40,14 @@ type Transaction struct {
     CheckinTime   sql.NullString `json:"checkin_time"`
 }
 
+type PendingTransaction struct {
+    TransactionID string
+    Title         string
+    Status        string
+    CheckoutTime  string
+    CheckinTime   sql.NullString
+}
+
 type History struct {
 	TransactionID string
 	Title         string
