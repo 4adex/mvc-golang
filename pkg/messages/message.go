@@ -25,6 +25,7 @@ func SetFlash(w http.ResponseWriter, r *http.Request, message string, messageTyp
 	c := &http.Cookie{
 		Name:  "flash",
 		Value: encoded,
+		Path:  "/",
 	}
 
 	// Check if a flash cookie already exists

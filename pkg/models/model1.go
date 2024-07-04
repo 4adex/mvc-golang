@@ -375,3 +375,69 @@ func UpdateTransactionStatusAdmin(transactionID string, status string) error {
 
 	return nil
 }
+
+
+func InsertBook(title, author, isbn, publicationYear, totalCopies string) error {
+	db, err := Connection()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	query := `
+		INSERT INTO books (title, author, isbn, publication_year, total_copies, available_copies)
+		VALUES (?, ?, ?, ?, ?, ?)
+	`
+	_, err = db.Exec(query, title, author, isbn, publicationYear, totalCopies, totalCopies)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+
+func GetPendingRequests(query string) ([]types.AdminRequest, error) {
+	db, err := Connection()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var requests []types.AdminRequest
+	for rows.Next() {
+		var request types.AdminRequest
+		err := rows.Scan(&request.ID, &request.Username, &request.RequestStatus)
+		if err != nil {
+			return nil, err
+		}
+		requests = append(requests, request)
+	}
+
+	return requests, nil
+}
+
+
+func UpdateUserRoleAndStatus(userID, role, status string) error {
+	db, err := Connection()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	query := "UPDATE users SET role = ?, request_status = ? WHERE id = ?"
+	_, err = db.Exec(query, role, status, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+

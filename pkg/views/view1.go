@@ -65,5 +65,12 @@ func ViewRequests() *template.Template {
     return temp
 }
 
+func AdminRequest() *template.Template {
+    temp := template.Must(template.ParseFiles("templates/ViewAdminRequests.html"))
+    return temp
+}
+
+
+
 
 

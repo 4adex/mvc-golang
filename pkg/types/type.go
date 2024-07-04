@@ -31,6 +31,12 @@ type Response struct {
     Type string `json:"type"`
 }
 
+type AdminRequest struct {
+    ID            int    `json:"id"`
+    Username      string `json:"username"`
+    RequestStatus string `json:"request_status"`
+}
+
 type Transaction struct {
     TransactionID string       `json:"transaction_id"`
     UserID        string       `json:"user_id"`

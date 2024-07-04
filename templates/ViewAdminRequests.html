@@ -34,35 +34,27 @@
         <main class="main-content">
             <h1>User History Log</h1>
             <div class="content">
-                {{if gt (len .Transactions) 0}}
+                {{if gt (len .Requests) 0}}
                 <table>
                     <thead>
                         <tr>
-                            <th>Title</th>
-                            <th>Status</th>
-                            <th>Checkout Date</th>
-                            <th>Return Date</th>
+                            <th>Id</th>
+                            <th>Username</th>
                             <th>Accept</th>
                             <th>Reject</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {{range .Transactions}}
+                        {{range .Requests}}
                         <tr>
-                            <td class="table-td">{{.Title}}</td>
-                            <td class="table-td">{{.Status}}</td>
-                            <td class="table-td" id="date">{{.CheckoutTime}}</td>
-                            {{if .CheckinTime}}
-                            <td class="table-td" id="date">{{.CheckinTime}}</td>
-                            {{else}}
-                            <td class="table-td" id="date">N.A.</td>
-                            {{end}}
+                            <td class="table-td">{{.ID}}</td>
+                            <td class="table-td">{{.Username}}</td>
                             <td class="table-td">
-                                <button onclick="HandlePost('/admin/transaction/{{.TransactionID}/accept}')"
+                                <button onclick="HandlePost('/admin/adminrequest/accept/{{.ID}}')"
                                     class="table-button">Accept</button>
                             </td>
                             <td class="table-td">
-                                <button onclick="HandlePost('/admin/transaction/{{.TransactionID}}/reject')"
+                                <button onclick="HandlePost('/admin/adminrequest/reject/{{.ID}}')"
                                     class="table-button">Reject</button>
                             </td>
 
@@ -71,7 +63,7 @@
                     </tbody>
                 </table>
                 {{else}}
-                <p>No transactions found for the user.</p>
+                <p>No requests for any user</p>
                 {{end}}
             </div>
         </main>

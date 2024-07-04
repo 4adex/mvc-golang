@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"context"
-	"encoding/json"
+	// "encoding/json"
 	// "fmt"
 	"net/http"
 
@@ -11,14 +11,14 @@ import (
 )
 
 
-func jsonResponse(w http.ResponseWriter, status int, redirect string) {
-	response := map[string]string{
-		"redirect": redirect,
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(response)
-}
+// func jsonResponse(w http.ResponseWriter, status int, redirect string) {
+// 	response := map[string]string{
+// 		"redirect": redirect,
+// 	}
+// 	w.Header().Set("Content-Type", "application/json")
+// 	w.WriteHeader(status)
+// 	json.NewEncoder(w).Encode(response)
+// }
 
 func AuthMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +31,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
         cookie, err := r.Cookie("token")
         if err != nil {
             if err == http.ErrNoCookie {
-                messages.SetFlash(w, r, "Please Login First", "error")
                 // jsonResponse(w, http.StatusInternalServerError, "/viewbooks")
                 // Redirect to sign-in page
                 http.Redirect(w, r, "/signin", http.StatusSeeOther)

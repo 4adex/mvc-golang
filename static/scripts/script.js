@@ -1,15 +1,19 @@
+const delay = 100;
+
 async function logout() {
     const response = await fetch(`/logout`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
-        }
+        }, credentials: 'include'
     });
 
     const data = await response.json();
 
     if (data.redirect) {
-        window.location.href = data.redirect;
+        setTimeout(() => {
+            window.location.href = data.redirect;
+        }, delay);
     }
 }
 
@@ -20,15 +24,20 @@ async function HandleGet(path) {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
-        }
+        
+        }, credentials: 'include'
     });
 
     if (response.ok){
-        window.location.href = path;
+        setTimeout(() => {
+            window.location.href = path;
+        }, delay);
     } else {
         const data = await response.json();
         if (data.redirect) {
-            window.location.href = data.redirect;
+            setTimeout(() => {
+                window.location.href = data.redirect;
+            }, delay);
         }
     }  
 }
@@ -38,12 +47,16 @@ async function HandlePost(path) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include'  // This ensures cookies are sent with the request
     });
 
     const data = await response.json();
     if (data.redirect) {
-        window.location.href = data.redirect;
+        // Add a small delay before redirect
+        setTimeout(() => {
+            window.location.href = data.redirect;
+        }, delay);
     }
 }
 
@@ -52,7 +65,7 @@ async function UpdateBook(id) {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
-        }
+        }, credentials: "include"
     });
 
     if (response.ok){
@@ -60,7 +73,9 @@ async function UpdateBook(id) {
     } else {
         const data = await response.json();
         if (data.redirect) {
-            window.location.href = data.redirect;
+            setTimeout(() => {
+                window.location.href = data.redirect;
+            }, delay);
         }
     }  
 }
@@ -72,12 +87,14 @@ async function DeleteBook(id) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
-        }
+        }, credentials: "include"
     });
 
     const data = await response.json();
     if (data.redirect) {
-        window.location.href = data.redirect;
+        setTimeout(() => {
+            window.location.href = data.redirect;
+        }, delay);
     }
     
 }
