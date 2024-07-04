@@ -26,8 +26,7 @@ func Start() {
 	r.HandleFunc("/signup",controller.RenderSignup).Methods("GET")
 	r.HandleFunc("/signup", controller.SignUpHandler).Methods("POST")
 	r.HandleFunc("/logout", controller.HandleLogout).Methods("POST")
-	r.Use(middleware.AuthMiddleware) 
-	// r.Use(middleware.FlashMiddleware)
+	r.Use(middleware.AuthMiddleware)
 
 	//first create list books route
 

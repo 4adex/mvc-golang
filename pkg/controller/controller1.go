@@ -46,12 +46,15 @@ func CheckoutHandler(w http.ResponseWriter, r *http.Request) {
     err := models.CreateCheckout(userId, bookId)
     if err != nil {
         messages.SetFlash(w, r, "Error Creating Checkout", "error")
-        jsonResponse(w, http.StatusInternalServerError, "/viewbooks")
+        log.Printf("Error creating checkout: %v", err)
+        jsonResponse(w, http.StatusInternalServerError, "/")
         return
     }
 
     messages.SetFlash(w, r, "Checkout Requested Successfully", "success")
-    jsonResponse(w, http.StatusOK, "/viewbooks")
+    log.Println("Flash message set: Checkout Requested Successfully")
+	// time.Sleep(1000 * time.Millisecond)
+    jsonResponse(w, http.StatusOK, "/")
 }
 
 func HandleViewBooks(w http.ResponseWriter, r *http.Request) {

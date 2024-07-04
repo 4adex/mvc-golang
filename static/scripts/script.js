@@ -55,7 +55,8 @@ async function HandlePost(path) {
     if (data.redirect) {
         // Add a small delay before redirect
         setTimeout(() => {
-            window.location.href = data.redirect;
+            console.log("Redirecting to:", data.redirect);
+            window.location.replace(data.redirect);
         }, delay);
     }
 }
