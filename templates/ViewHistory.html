@@ -24,13 +24,7 @@
           </div>
         </div>
       </header>
-      {{if .msg}}
-        {{if eq .msgType "success"}}
-          <div class="alert alert-success">{{.msg}}</div>
-        {{else}}
-        <div class="alert alert-error">{{.msg}}</div>
-        {{end}}
-      {{end}}
+      <div id="message-div"></div>
       <main class="main-content">
         <h1>User History Log</h1>
         <div class="content">
@@ -77,5 +71,6 @@
         </div>
       </main>
     </div>
+    <script>document.addEventListener('DOMContentLoaded', displayFlashMessage);</script>
   </body>
 </html>

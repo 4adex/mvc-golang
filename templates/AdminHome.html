@@ -21,13 +21,7 @@
           <button class="logout" onclick="logout()">Logout</button>
         </div>
       </header>
-      {{if .msg}}
-        {{if eq .msgType "success"}}
-          <div class="alert alert-success">{{.msg}}</div>
-        {{else}}
-        <div class="alert alert-error">{{.msg}}</div>
-        {{end}}
-      {{end}}
+      <div id="message-div"></div>
       <main class="main-content">
         <h2 class="user-call">hello {{.Username}}!</h2>
         <h1>Welcome to Library!</h1>
@@ -40,5 +34,8 @@
         </div>
       </main>
     </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', displayFlashMessage);
+    </script>
   </body>
 </html>

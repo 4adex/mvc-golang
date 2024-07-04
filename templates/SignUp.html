@@ -24,13 +24,7 @@
           </div>
         </div>
       </header>
-      {{if .msg}}
-        {{if eq .msgType "success"}}
-          <div class="alert alert-success">{{.msg}}</div>
-        {{else}}
-        <div class="alert alert-error">{{.msg}}</div>
-        {{end}}
-      {{end}}
+      <div id="message-div"></div>
       <main class="main-content">
         <h1>Create New Account</h1>
         <div class="button-group">
@@ -53,6 +47,57 @@
       </main>
     </div>
     <script>
+      var delay = 100;
+      function displayFlashMessage() {
+      // alert("Youtube");
+      const flashMessage = localStorage.getItem('flashMessage');
+      const flashType = localStorage.getItem('flashType');
+
+      if (flashMessage && flashType) {
+        // Display the flash message (adjust this based on your HTML structure)
+        flashElement = document.getElementById('message-div');
+        flashElement.textContent = flashMessage;
+        flashElement.className = `alert alert-${flashType}`;
+        // document.body.insertBefore(flashElement, document.body.firstChild);
+
+        // Clear the flash message from localStorage
+        localStorage.removeItem('flashMessage');
+        localStorage.removeItem('flashType');
+
+        // Optionally, remove the flash message after a few seconds
+        setTimeout(() => {
+          flashElement.remove();
+        }, 5000);
+      }
+    };
+
+    async function HandleGet(path) {
+      // alert('Foo');
+      const response = await fetch(path, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+
+        }, credentials: 'include'
+      });
+
+      if (response.ok) {
+        setTimeout(() => {
+          window.location.href = path;
+        }, delay);
+      } else {
+        const data = await response.json();
+        if (data.flashMessage && data.flashType) {
+          // Store flash message in localStorage
+          localStorage.setItem('flashMessage', data.flashMessage);
+          localStorage.setItem('flashType', data.flashType);
+        }
+        if (data.redirect) {
+          console.log("Redirecting to:", data.redirect);
+          window.location.href = data.redirect;
+        }
+      }
+    };
       document.getElementById('signupForm').onsubmit = async function (event) {
         event.preventDefault();
         const formData = new FormData(this);
@@ -65,6 +110,11 @@
             }
           });
           const data = await response.json();
+          if (data.flashMessage && data.flashType) {
+            // Store flash message in localStorage
+            localStorage.setItem('flashMessage', data.flashMessage);
+            localStorage.setItem('flashType', data.flashType);
+        }
           if (data.redirect) {
             window.location.href = data.redirect;
           }
@@ -72,6 +122,7 @@
           console.error('Error:', error);
         }
       };
+      document.addEventListener('DOMContentLoaded', displayFlashMessage);
     </script>
   </body>
 </html>

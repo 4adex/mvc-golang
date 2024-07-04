@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/4adex/mvc-golang/pkg/jwtutils"
-	"github.com/4adex/mvc-golang/pkg/messages"
+	// "github.com/4adex/mvc-golang/pkg/messages"
 )
 
 
@@ -44,7 +44,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
         claims, err := jwtutils.ValidateJWT(tokenStr)
         if err != nil {
             // Redirect to sign-in page
-            messages.SetFlash(w, r, "Unauthorized Access", "error")
             http.Redirect(w, r, "/signin", http.StatusSeeOther)
             return
         }
@@ -68,7 +67,7 @@ func AdminMiddleware(next http.Handler) http.Handler {
         role := r.Context().Value("role").(string)
         // fmt.Println("Role is", role)
         if role != "admin" {
-            messages.SetFlash(w, r, "Unauthorized Access", "error")
+            // messages.SetFlash(w, r, "Unauthorized Access", "error")
             http.Redirect(w, r, "/", http.StatusSeeOther)
             return
         }

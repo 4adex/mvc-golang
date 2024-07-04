@@ -24,13 +24,7 @@
           </div>
         </div>
       </header>
-      {{if .msg}}
-        {{if eq .msgType "success"}}
-          <div class="alert alert-success">{{.msg}}</div>
-        {{else}}
-        <div class="alert alert-error">{{.msg}}</div>
-        {{end}}
-      {{end}}
+      <div id="message-div"></div>
       <main class="main-content">
         <h1>Update Book</h1>
         <div class="button-group">
@@ -81,6 +75,11 @@
             }
           });
           const data = await response.json();
+          if (data.flashMessage && data.flashType) {
+            // Store flash message in localStorage
+            localStorage.setItem('flashMessage', data.flashMessage);
+            localStorage.setItem('flashType', data.flashType);
+        }
           if (data.redirect) {
             window.location.href = data.redirect;
           }
@@ -88,6 +87,8 @@
           console.error('Error:', error);
         }
       };
+
+      document.addEventListener('DOMContentLoaded', displayFlashMessage);
     </script>
   </body>
 </html>

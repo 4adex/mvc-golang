@@ -1,25 +1,13 @@
 const delay = 100;
-
+console.log("Script loaded");
 async function logout() {
-    const response = await fetch(`/logout`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }, credentials: 'include'
-    });
-
-    const data = await response.json();
-
-    if (data.redirect) {
-        setTimeout(() => {
-            window.location.href = data.redirect;
-        }, delay);
-    }
+    HandlePost('/logout');
 }
 
 // alert("Connected");
 
 async function HandleGet(path) {
+    // alert('Foo');
     const response = await fetch(path, {
         method: 'GET',
         headers: {
@@ -34,69 +22,76 @@ async function HandleGet(path) {
         }, delay);
     } else {
         const data = await response.json();
+        if (data.flashMessage && data.flashType) {
+            // Store flash message in localStorage
+            localStorage.setItem('flashMessage', data.flashMessage);
+            localStorage.setItem('flashType', data.flashType);
+        }
         if (data.redirect) {
-            setTimeout(() => {
-                window.location.href = data.redirect;
-            }, delay);
+            console.log("Redirecting to:", data.redirect);
+            window.location.href = data.redirect;
         }
     }  
 }
 
 async function HandlePost(path) {
-    const response = await fetch(path, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include'  // This ensures cookies are sent with the request
-    });
+    console.log("HandlePost called with path:", path);
+    try {
+        const response = await fetch(path, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        });
 
-    const data = await response.json();
-    if (data.redirect) {
-        // Add a small delay before redirect
-        setTimeout(() => {
+        const data = await response.json();
+        console.log("Response received:", data);
+        
+        if (data.flashMessage && data.flashType) {
+            // Store flash message in localStorage
+            localStorage.setItem('flashMessage', data.flashMessage);
+            localStorage.setItem('flashType', data.flashType);
+        }
+        
+        if (data.redirect) {
             console.log("Redirecting to:", data.redirect);
-            window.location.replace(data.redirect);
-        }, delay);
+            window.location.href = data.redirect;
+        }
+    } catch (error) {
+        console.error("Error in HandlePost:", error);
     }
 }
 
 async function UpdateBook(id) {
-    const response = await fetch('/admin/update/'+id, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }, credentials: "include"
-    });
-
-    if (response.ok){
-        window.location.href = '/admin/update/'+id;
-    } else {
-        const data = await response.json();
-        if (data.redirect) {
-            setTimeout(() => {
-                window.location.href = data.redirect;
-            }, delay);
-        }
-    }  
+    HandleGet('/admin/update/'+id);
 }
 
 
 async function DeleteBook(id) {
-    // alert("Aaaaaa");
-    const response = await fetch('/admin/delete/'+id, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }, credentials: "include"
-    });
+    HandlePost('/admin/delete/'+id);
+}
 
-    const data = await response.json();
-    if (data.redirect) {
-        setTimeout(() => {
-            window.location.href = data.redirect;
-        }, delay);
-    }
+function displayFlashMessage() {
+    // alert("Youtube");
+    const flashMessage = localStorage.getItem('flashMessage');
+    const flashType = localStorage.getItem('flashType');
     
+    if (flashMessage && flashType) {
+        // Display the flash message (adjust this based on your HTML structure)
+        flashElement = document.getElementById('message-div');
+        flashElement.textContent = flashMessage;
+        flashElement.className = `alert alert-${flashType}`;
+        // document.body.insertBefore(flashElement, document.body.firstChild);
+        
+        // Clear the flash message from localStorage
+        localStorage.removeItem('flashMessage');
+        localStorage.removeItem('flashType');
+        
+        // Optionally, remove the flash message after a few seconds
+        setTimeout(() => {
+            flashElement.remove();
+        }, 5000);
+    }
 }
 
