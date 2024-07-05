@@ -92,24 +92,33 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		log.Printf("Error parsing form: %v", err)
-		
 		jsonResponse(w, http.StatusInternalServerError, "/signup", "Unable to parse form successfully", "error")
-		
 		return
 	}
 
 	user.Username = r.FormValue("username")
 	user.Password = r.FormValue("password")
 	user.Email = r.FormValue("email")
-	user.Role = "client"
 	user.RequestStatus = "not_requested"
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	
+	isEmpty, err := models.IsUsersTableEmpty()
 	if err != nil {
-		log.Printf("Error hashing password: %v", err)
-		
+		log.Printf("Error checking users table: %v", err)
 		jsonResponse(w, http.StatusInternalServerError, "/signup", "Internal Server Error", "error")
-		
+		return
+	}
+
+	if isEmpty {
+		user.Role = "admin"
+	} else {
+		user.Role = "client"
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if (err != nil) {
+		log.Printf("Error hashing password: %v", err)
+		jsonResponse(w, http.StatusInternalServerError, "/signup", "Internal Server Error", "error")
 		return
 	}
 
@@ -117,18 +126,14 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	err = models.CreateUser(user)
 	if err != nil {
 		log.Printf("Error creating user: %v", err)
-		
 		jsonResponse(w, http.StatusInternalServerError, "/signup", "Internal Server Error", "error")
-		
 		return
 	}
 
 	token, err := jwtutils.GenerateJWT(user.Username, user.Email, user.Role, strconv.Itoa(user.ID))
 	if err != nil {
 		log.Printf("Error generating JWT: %v", err)
-		
 		jsonResponse(w, http.StatusInternalServerError, "/signup", "Internal Server Error", "error")
-		
 		return
 	}
 
@@ -138,7 +143,5 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		Expires: time.Now().Add(24 * time.Hour),
 	})
 
-	
 	jsonResponse(w, http.StatusOK, "/", "Profile Created Successfully", "success")
-	
 }

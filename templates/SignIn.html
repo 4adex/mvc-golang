@@ -43,7 +43,7 @@
     </main>
   </div>
   <script>
-    var delay=100;
+    // var delay=100;
     function displayFlashMessage() {
       // alert("Youtube");
       const flashMessage = localStorage.getItem('flashMessage');
@@ -80,7 +80,7 @@
       if (response.ok) {
         setTimeout(() => {
           window.location.href = path;
-        }, delay);
+        }, 100);
       } else {
         const data = await response.json();
         if (data.flashMessage && data.flashType) {

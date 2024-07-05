@@ -1,4 +1,4 @@
-const delay = 100;
+// const delay = 100;
 console.log("Script loaded");
 async function logout() {
     HandlePost('/logout');
@@ -19,7 +19,7 @@ async function HandleGet(path) {
     if (response.ok){
         setTimeout(() => {
             window.location.href = path;
-        }, delay);
+        }, 100);
     } else {
         const data = await response.json();
         if (data.flashMessage && data.flashType) {

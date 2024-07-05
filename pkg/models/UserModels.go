@@ -39,3 +39,19 @@ func CreateUser(user types.User) error {
 	}
 	return nil
 }
+
+func IsUsersTableEmpty() (bool, error) {
+	db, err := Connection()
+	if err != nil {
+		return false, err
+	}
+
+	var count int
+	query := "SELECT COUNT(*) FROM users"
+	err = db.QueryRow(query).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+
+	return count == 0, nil
+}
