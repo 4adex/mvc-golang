@@ -21,6 +21,8 @@ func Start() {
 	r.HandleFunc("/reqadmin", controller.RenderReqAdmin).Methods("GET")
 	r.HandleFunc("/reqadmin", controller.HandleAdminRequest).Methods("POST")
 
+
+	//Authentication routes
 	r.HandleFunc("/signin", controller.RenderSignin).Methods("GET")
 	r.HandleFunc("/signin", controller.SignInHandler).Methods("POST")
 	r.HandleFunc("/signup",controller.RenderSignup).Methods("GET")
@@ -45,10 +47,7 @@ func Start() {
 	adminRouter.HandleFunc("/adminrequest/accept/{id}", controller.HandleAcceptAdminRequest).Methods("POST")
 	adminRouter.HandleFunc("/adminrequest/reject/{id}", controller.HandleRejectAdminRequest).Methods("POST")
 
-
-
-
-
+	//middlewares for admin routes
 	adminRouter.Use(middleware.AuthMiddleware)
     adminRouter.Use(middleware.AdminMiddleware)
 

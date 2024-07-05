@@ -23,7 +23,6 @@ func RenderBooksAdmin(w http.ResponseWriter, r *http.Request) {
 	books, err := models.GetBooks()
 	var username string = r.Context().Value("username").(string)
 	if err != nil {
-
 		jsonResponse(w, http.StatusInternalServerError, "/", "Error loading from database", "error")
 		return
 	}
@@ -40,7 +39,6 @@ func RenderUpdateBook(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bookID, err := strconv.Atoi(vars["id"])
 	if err != nil {
-
 		jsonResponse(w, http.StatusBadRequest, "/admin/viewbooks", "Invalid book ID", "error")
 		return
 	}
@@ -48,7 +46,6 @@ func RenderUpdateBook(w http.ResponseWriter, r *http.Request) {
 	book, err := models.GetBookByID(bookID)
 	if err != nil {
 		if err.Error() == "book not found" {
-
 			jsonResponse(w, http.StatusNotFound, "/admin/viewbooks", "Book not found", "error")
 			return
 		}
@@ -61,7 +58,6 @@ func RenderUpdateBook(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	data["Username"] = username
 	data["Book"] = book
-
 	t := views.UpdateBook()
 	t.Execute(w, data)
 }
@@ -69,25 +65,20 @@ func RenderUpdateBook(w http.ResponseWriter, r *http.Request) {
 func HandleUpdateBook(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bookID := vars["id"]
-
 	err := r.ParseForm()
 	if err != nil {
-
 		jsonResponse(w, http.StatusInternalServerError, "/admin/viewbooks", "Unable to parse form successfully", "error")
 		return
 	}
-
 	title := r.FormValue("title")
 	author := r.FormValue("author")
 	isbn := r.FormValue("isbn")
 	publicationYear := r.FormValue("publication_year")
 
 	if title == "" || author == "" || isbn == "" || publicationYear == "" {
-
 		jsonResponse(w, http.StatusBadRequest, "/admin/viewbooks", "Parsed data is incomplete", "error")
 		return
 	} else if len(isbn) > 13 {
-
 		jsonResponse(w, http.StatusBadRequest, "/admin/viewbooks", "ISBN entered is too long", "error")
 		return
 	}
@@ -95,38 +86,31 @@ func HandleUpdateBook(w http.ResponseWriter, r *http.Request) {
 	err = models.UpdateBook(bookID, title, author, isbn, publicationYear)
 	if err != nil {
 		if err == sql.ErrNoRows {
-
 			jsonResponse(w, http.StatusNotFound, "/admin/viewbooks", "Book Not Found", "error")
 		} else {
-
 			jsonResponse(w, http.StatusInternalServerError, "/admin/viewbooks", "Internal Server error", "error")
 		}
 		return
 	}
-
 	jsonResponse(w, http.StatusOK, "/admin/viewbooks", "Book updated successfully", "success")
 }
 
 func HandleDeleteBook(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bookID := vars["id"]
-
 	isCheckedOut, err := models.IsBookCheckedOut(bookID)
 	if err != nil {
-
 		jsonResponse(w, http.StatusInternalServerError, "/admin/viewbooks", "Internal Server Error", "error")
 		return
 	}
 
 	if isCheckedOut {
-
 		jsonResponse(w, http.StatusBadRequest, "/admin/viewbooks", "Cannot delete book that is currently checked out", "error")
 		return
 	}
 
 	err = models.DeleteTransactionsByBookID(bookID)
 	if err != nil {
-
 		jsonResponse(w, http.StatusInternalServerError, "/admin/viewbooks", "Internal Server Error", "error")
 		return
 	}
@@ -134,10 +118,8 @@ func HandleDeleteBook(w http.ResponseWriter, r *http.Request) {
 	err = models.DeleteBookByID(bookID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-
 			jsonResponse(w, http.StatusNotFound, "/admin/viewbooks", "Book not found", "error")
 		} else {
-
 			jsonResponse(w, http.StatusInternalServerError, "/admin/viewbooks", "Internal Server Error", "error")
 		}
 		return
@@ -149,14 +131,11 @@ func HandleDeleteBook(w http.ResponseWriter, r *http.Request) {
 func RenderViewRequests(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value("id").(string)
 	username := r.Context().Value("username").(string)
-
 	transactions, err := models.GetPendingTransactions(userID)
 	if err != nil {
-
 		jsonResponse(w, http.StatusInternalServerError, "/admin", "Internal Server Error", "error")
 		return
 	}
-
 
 	data := map[string]interface{}{
 		"Username":     username,
@@ -173,7 +152,6 @@ func HandleTransactionAction(w http.ResponseWriter, r *http.Request) {
 	action := vars["action"]
 
 	if action != "accept" && action != "reject" {
-
 		jsonResponse(w, http.StatusBadRequest, "/admin/viewrequests", "Invalid Action", "error")
 		return
 	}
