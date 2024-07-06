@@ -1,5 +1,5 @@
-CREATE DATABASE library_management;
-USE library_management;
+-- CREATE DATABASE library_management;
+-- USE library_management;
 
 CREATE TABLE users (
     id INT NOT NULL AUTO_INCREMENT,
