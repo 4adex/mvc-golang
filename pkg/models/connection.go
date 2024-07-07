@@ -23,9 +23,10 @@ func dsn() string {
 	password := os.Getenv("DB_PASSWORD")
 	hostname := os.Getenv("DB_HOST")
 	dbName   := os.Getenv("DB_NAME")
+	port := os.Getenv("DB_PORT")
 
 
-    return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbName)
+    return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, hostname, port, dbName)
 }
 
 func Connection() (*sql.DB, error) {  
