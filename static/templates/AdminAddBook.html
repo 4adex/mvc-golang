@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Suwannaphum:wght@100;300;400;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShelfMaster</title>
+  <script src="/static/scripts/script.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1 class="logo">ShelfMaster</h1>
+        <div>
+          <button class="logout" onclick="HandleGet('/')">{{.Username}}</button>
+          <button class="logout" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </header>
+    <div id="message-div"></div>
+    <main class="main-content">
+      <h1>Add New Book</h1>
+      <div class="button-group">
+        <form id="addbookForm">
+          <div class="form-element">
+            <label class="form-label">Title</label>
+            <input type="text" id="title" name="title" placeholder="Book Title" required />
+          </div>
+          <div class="form-element">
+            <label class="form-label">Author</label>
+            <input type="text" id="author" name="author" placeholder="Book Author" required />
+          </div>
+          <div class="form-element">
+            <label class="form-label">ISBN</label>
+            <input type="text" id="isbn" name="isbn" placeholder="Book ISBN" required />
+          </div>
+          <div class="form-element">
+            <label class="form-label">Publication Year</label>
+            <input type="number" id="publication_year" name="publication_year" placeholder="Publication Year"
+              required />
+          </div>
+          <div class="form-element">
+            <label class="form-label">Total Copies</label>
+            <input type="number" id="total_copies" name="total_copies" placeholder="Total Copies" required />
+          </div>
+          <button class="submit-button" type="submit">Submit</button>
+        </form>
+      </div>
+    </main>
+  </div>
+  <script>
+    document.getElementById('addbookForm').onsubmit = async function (event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      try {
+        const response = await fetch('/admin/addbook', {
+          method: 'POST',
+          body: new URLSearchParams(formData),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        });
+        const data = await response.json();
+        if (data.flashMessage && data.flashType) {
+          // Store flash message in localStorage
+          localStorage.setItem('flashMessage', data.flashMessage);
+          localStorage.setItem('flashType', data.flashType);
+        }
+        if (data.redirect) {
+          window.location.href = data.redirect;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', displayFlashMessage);
+  </script>
+</body>
+
+</html>

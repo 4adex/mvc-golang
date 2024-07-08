@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Suwannaphum:wght@100;300;400;700;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShelfMaster</title>
+    <script src="/static/scripts/script.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 class="logo">ShelfMaster</h1>
+                <div>
+                    <button class="logout" onclick="HandleGet('/')">{{.Username}}</button>
+                    <button class="logout" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </header>
+        <div id="message-div"></div>
+        <main class="main-content">
+            <h1>User History Log</h1>
+            <div class="content">
+                {{if gt (len .Transactions) 0}}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Checkout Date</th>
+                            <th>Return Date</th>
+                            <th>Accept</th>
+                            <th>Reject</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .Transactions}}
+                        <tr>
+                            <td class="table-td">{{.Title}}</td>
+                            <td class="table-td">{{.Status}}</td>
+                            <td class="table-td" id="date">{{.CheckoutTime}}</td>
+                            {{if .CheckinTime}}
+                            <td class="table-td" id="date">{{.CheckinTime}}</td>
+                            {{else}}
+                            <td class="table-td" id="date">N.A.</td>
+                            {{end}}
+                            <td class="table-td">
+                                <button onclick="HandlePost('/admin/transaction/{{.TransactionID}}/accept')"
+                                    class="table-button">Accept</button>
+                            </td>
+                            <td class="table-td">
+                                <button onclick="HandlePost('/admin/transaction/{{.TransactionID}}/reject')"
+                                    class="table-button">Reject</button>
+                            </td>
+
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+                {{else}}
+                <p>No transactions found for the user.</p>
+                {{end}}
+            </div>
+        </main>
+    </div>
+    <script>document.addEventListener('DOMContentLoaded', displayFlashMessage);</script>
+</body>
+
+</html>

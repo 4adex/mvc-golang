@@ -55,3 +55,50 @@ func IsUsersTableEmpty() (bool, error) {
 
 	return count == 0, nil
 }
+
+func GetUserRequestStatus(userID string) (string, string, error) {
+    db, err := Connection()
+    if err != nil {
+        return "", "", err
+    }
+    defer db.Close()
+
+    var role, requestStatus string
+    query := "SELECT role, request_status FROM users WHERE id = ?"
+    err = db.QueryRow(query, userID).Scan(&role, &requestStatus)
+    if err != nil {
+        return "", "", err
+    }
+    return role, requestStatus, nil
+}
+
+func UpdateUserRequestStatus(userID string, status string) error {
+    db, err := Connection()
+    if err != nil {
+        return err
+    }
+    defer db.Close()
+
+    query := "UPDATE users SET request_status = ? WHERE id = ?"
+    _, err = db.Exec(query, status, userID)
+    if err != nil {
+        return err
+    }
+    return nil
+}
+
+func UpdateUserRoleAndStatus(userID, role, status string) error {
+	db, err := Connection()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	query := "UPDATE users SET role = ?, request_status = ? WHERE id = ?"
+	_, err = db.Exec(query, role, status, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

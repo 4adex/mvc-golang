@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Suwannaphum:wght@100;300;400;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShelfMaster</title>
+    <script src="/static/scripts/script.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="header-content">
+          <h1 class="logo">ShelfMaster</h1>
+          <div>
+            <button class="logout" onclick="HandleGet('/')">{{.Username}}</button>
+            <button class="logout" onclick="logout()">Logout</button>
+          </div>
+        </div>
+      </header>
+      <div id="message-div"></div>
+      <main class="main-content">
+        <h1>Library Books</h1>
+        <div class="content">
+          {{if gt (len .Books) 0}}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Books}}
+                        <tr>
+                            <td class="table-td">{{.Title}}</td>
+                            <td class="table-td" id="author">{{.Author}}</td>
+                            
+                              {{if gt .AvailableCopies 0}}
+                                <td class="table-td" id="status">
+                               {{.AvailableCopies}} copies available
+                              </td>
+                              <td class="table-td">
+                                <button class="table-button" onclick="HandlePost('/checkout/{{.ID}}')">Checkout</button>
+                            </td>
+                              {{else}}
+                                <td class="table-td" id="unavailable">
+                                unavailable
+                              </td>
+                              <td class="table-td">
+                                <button class="table-button" id="disabled-button" disabled>None</button>
+                            </td>
+                              {{end}}
+                            
+                        </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        {{else}}
+            <p>No books available in the library.</p>
+        {{end}}
+        </div>
+      </main>
+    </div>
+    <script>document.addEventListener('DOMContentLoaded', displayFlashMessage);</script>
+  </body>
+</html>
