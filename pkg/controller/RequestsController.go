@@ -2,7 +2,6 @@ package controller
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/4adex/mvc-golang/pkg/models"
 	"log"
 	"net/http"
@@ -16,7 +15,6 @@ import (
 func CheckoutHandler(w http.ResponseWriter, r *http.Request) {
 	userId := r.Context().Value("id").(string)
 	bookId := mux.Vars(r)["id"]
-	fmt.Println(userId, bookId)
 	err := models.CreateCheckout(userId, bookId)
 	if err != nil {
 		log.Printf("Error creating checkout: %v", err)

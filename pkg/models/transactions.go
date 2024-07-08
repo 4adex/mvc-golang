@@ -70,8 +70,6 @@ func GetHistory(userID string) ([]types.History, error) {
 		return nil, err
 	}
 
-	fmt.Println(histories)
-
 	return histories, nil
 }
 

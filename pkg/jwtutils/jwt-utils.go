@@ -1,11 +1,21 @@
 package jwtutils
 
 import (
+    "os"
     "time"
     "github.com/dgrijalva/jwt-go"
+    "github.com/joho/godotenv"
+    "log"
 )
 
-var jwtKey = []byte("your_secret_key")
+
+func init() {
+    if err := godotenv.Load(); err != nil {
+        log.Fatalf("Error loading .env file: %v", err)
+    }
+}
+
+var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
 type Claims struct {
     Username string `json:"username"`

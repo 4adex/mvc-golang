@@ -102,3 +102,19 @@ func UpdateUserRoleAndStatus(userID, role, status string) error {
 
 	return nil
 }
+
+func DoesUserExist(username, email string) (bool, error) {
+	db, err := Connection()
+	if err != nil {
+		return false, err
+	}
+
+	var count int
+	query := "SELECT COUNT(*) FROM users WHERE username = ? OR email = ?"
+	err = db.QueryRow(query, username, email).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}

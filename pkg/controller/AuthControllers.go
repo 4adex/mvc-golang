@@ -52,7 +52,6 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := models.GetUser(username)
 	if err != nil {
 		log.Printf("Error retrieving user: %v", err)
-		
 		jsonResponse(w, http.StatusNotFound, "/", "User not found", "error")
 		return
 	}
@@ -91,13 +90,13 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Getting field values from the form data
+	// Getting field values from the form data
 	user.Username = r.FormValue("username")
 	user.Password = r.FormValue("password")
 	user.Email = r.FormValue("email")
 	user.RequestStatus = "not_requested"
 
-	//Checking if any users exists before or not, that decides the role as user or admin
+	// Checking if any users exist before or not, which decides the role as user or admin
 	isEmpty, err := models.IsUsersTableEmpty()
 	if err != nil {
 		log.Printf("Error checking users table: %v", err)
@@ -110,16 +109,28 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		user.Role = "client"
 	}
 
-	//Generating hash for the password
+	// Generating hash for the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if (err != nil) {
+	if err != nil {
 		log.Printf("Error hashing password: %v", err)
 		jsonResponse(w, http.StatusInternalServerError, "/signup", "Internal Server Error", "error")
 		return
 	}
 	user.Password = string(hashedPassword)
 
-	//Storing the details in the db
+	// Checking if username or email already exists
+	exists, err := models.DoesUserExist(user.Username, user.Email)
+	if err != nil {
+		log.Printf("Error checking if user exists: %v", err)
+		jsonResponse(w, http.StatusInternalServerError, "/signup", "Internal Server Error", "error")
+		return
+	}
+	if exists {
+		jsonResponse(w, http.StatusBadRequest, "/signup", "Username or Email already exists", "error")
+		return
+	}
+
+	// Storing the details in the db
 	err = models.CreateUser(user)
 	if err != nil {
 		log.Printf("Error creating user: %v", err)
@@ -127,7 +138,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Generating the JWT token and storing it in cookie
+	// Generating the JWT token and storing it in cookie
 	token, err := jwtutils.GenerateJWT(user.Username, user.Email, user.Role, strconv.Itoa(user.ID))
 	if err != nil {
 		log.Printf("Error generating JWT: %v", err)
