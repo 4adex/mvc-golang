@@ -27,16 +27,21 @@ func GetUser(field string) (types.User, error) {
 	return User, nil
 }
 
-func CreateUser(user types.User) error {
+func CreateUser(user *types.User) error {
 	db, err := Connection()
 	if err != nil {
 		return err
 	}
 	query := "INSERT INTO users (username, password, email, role, salt, request_status) VALUES (?, ?, ?, ?, ?, ?)"
-	_, err = db.Exec(query, user.Username, user.Password, user.Email, user.Role, user.Salt, user.RequestStatus)
+	result, err := db.Exec(query, user.Username, user.Password, user.Email, user.Role, user.Salt, user.RequestStatus)
 	if err != nil {
 		return err
 	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+	user.ID = int(id)
 	return nil
 }
 

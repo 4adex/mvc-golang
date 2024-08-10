@@ -62,7 +62,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Storing the details in the db
-	err = models.CreateUser(user)
+	err = models.CreateUser(&user)
 	if err != nil {
 		log.Printf("Error creating user: %v", err)
 		jsonResponse(w, http.StatusInternalServerError, "/signup", "Internal Server Error", "error")

@@ -20,6 +20,7 @@ func HandleUpdateBook(w http.ResponseWriter, r *http.Request) {
 	author := r.FormValue("author")
 	isbn := r.FormValue("isbn")
 	publicationYear := r.FormValue("publication_year")
+	availableCopies := r.FormValue("available_copies")
 
 	//error handling and checking for bad requests
 	if title == "" || author == "" || isbn == "" || publicationYear == "" {
@@ -31,7 +32,7 @@ func HandleUpdateBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//updating book in db after ensuring data is clean
-	err = models.UpdateBook(bookID, title, author, isbn, publicationYear)
+	err = models.UpdateBook(bookID, title, author, isbn, publicationYear, availableCopies)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			jsonResponse(w, http.StatusNotFound, "/admin/viewbooks", "Book Not Found", "error")

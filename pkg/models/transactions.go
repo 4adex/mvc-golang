@@ -84,7 +84,7 @@ func GetHoldings(userID string) ([]types.Holding, error) {
     SELECT t.transaction_id, b.title, b.author, t.checkout_time
     FROM books b
     JOIN transactions t ON b.id = t.book_id
-    WHERE t.status IN ('checkout_accepted', 'checkin_requested') AND t.user_id = ?;`
+    WHERE t.status IN ('checkout_accepted', 'checkin_requested', 'checkin_rejected') AND t.user_id = ?;`
     
     rows, err := db.Query(query, userID)
     if err != nil {
@@ -116,7 +116,7 @@ func GetTransactionByID(transactionID string) (types.Transaction, error) {
     row := db.QueryRow(query, transactionID)
 
     var transaction types.Transaction
-    err = row.Scan(&transaction.TransactionID, &transaction.BookID, &transaction.UserID, &transaction.Status, &transaction.CheckoutTime, &transaction.CheckinTime)
+    err = row.Scan(&transaction.TransactionID, &transaction.UserID, &transaction.BookID, &transaction.Status, &transaction.CheckoutTime, &transaction.CheckinTime)
     if err != nil {
         return types.Transaction{}, err
     }

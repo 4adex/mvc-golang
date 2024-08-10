@@ -6,6 +6,11 @@ import (
 )
 
 func RenderSignin(w http.ResponseWriter, r *http.Request) {
+	_, err := r.Cookie("token")
+	if err == nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 	t := views.Signin()
 	t.Execute(w, nil)
 }

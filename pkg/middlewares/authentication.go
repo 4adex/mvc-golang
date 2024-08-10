@@ -2,23 +2,10 @@ package middleware
 
 import (
 	"context"
-	// "encoding/json"
-	// "fmt"
 	"net/http"
-
 	"github.com/4adex/mvc-golang/pkg/jwtutils"
-	// "github.com/4adex/mvc-golang/pkg/messages"
+    "strings"
 )
-
-
-// func jsonResponse(w http.ResponseWriter, status int, redirect string) {
-// 	response := map[string]string{
-// 		"redirect": redirect,
-// 	}
-// 	w.Header().Set("Content-Type", "application/json")
-// 	w.WriteHeader(status)
-// 	json.NewEncoder(w).Encode(response)
-// }
 
 func AuthMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -31,8 +18,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
         cookie, err := r.Cookie("token")
         if err != nil {
             if err == http.ErrNoCookie {
-                // jsonResponse(w, http.StatusInternalServerError, "/viewbooks")
-                // Redirect to sign-in page
                 http.Redirect(w, r, "/signin", http.StatusSeeOther)
                 return
             }
@@ -46,6 +31,14 @@ func AuthMiddleware(next http.Handler) http.Handler {
             // Redirect to sign-in page
             http.Redirect(w, r, "/signin", http.StatusSeeOther)
             return
+        }
+
+        if strings.HasPrefix(r.URL.Path,"/admin") {
+            if claims.Role != "admin" {
+                http.Redirect(w, r, "/", http.StatusSeeOther)
+                return
+            }
+
         }
 
         ctx := context.WithValue(r.Context(), "username", claims.Username)
@@ -62,19 +55,17 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 
 
-func AdminMiddleware(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        role := r.Context().Value("role").(string)
-        // fmt.Println("Role is", role)
-        if role != "admin" {
-            // messages.SetFlash(w, r, "Unauthorized Access", "error")
-            http.Redirect(w, r, "/", http.StatusSeeOther)
-            return
-        }
+// func AdminMiddleware(next http.Handler) http.Handler {
+//     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//         role := r.Context().Value("role").(string)
+//         if role != "admin" {
+//             http.Redirect(w, r, "/", http.StatusSeeOther)
+//             return
+//         }
 
-        next.ServeHTTP(w, r)
-    })
-}
+//         next.ServeHTTP(w, r)
+//     })
+// }
 
 
 

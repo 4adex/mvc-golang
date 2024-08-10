@@ -44,13 +44,28 @@
                         {{range .Transactions}}
                         <tr>
                             <td class="table-td">{{.Title}}</td>
-                            <td class="table-td">{{.Status}}</td>
-                            <td class="table-td" id="date">{{.CheckoutTime}}</td>
-                            {{if .CheckinTime}}
-                            <td class="table-td" id="date">{{.CheckinTime}}</td>
+                            {{if eq .Status "checkout_requested"}}
+                              <td class="table-td">Checkout Requested</td>
+                            {{else if eq .Status "checkout_accepted"}}
+                              <td class="table-td">Checkout Accepted</td>
+                            {{else if eq .Status "checkout_rejected"}}
+                              <td class="table-td">Checkout Rejected</td>
+                            {{else if eq .Status "checkin_requested"}}
+                              <td class="table-td">Checkin Requested</td>
+                            {{else if eq .Status "checkin_accepted"}}
+                              <td class="table-td">Checkin Accepted</td>
+                            {{else if eq .Status "checkin_rejected"}}
+                              <td class="table-td">Checkin Rejected</td>
                             {{else}}
-                            <td class="table-td" id="date">N.A.</td>
+                            <td class="table-td">Returned</td>
                             {{end}}
+                            <td class="table-td" id="date">{{.CheckoutTime}}</td>
+                            {{if .CheckinTime.Valid}}
+                              <td class="table-td" id="date">{{.CheckinTime.String}}</td>
+                            {{else}}
+                              <td class="table-td" id="date">N.A.</td>
+                            {{end}}
+                            
                             <td class="table-td">
                                 <button onclick="HandlePost('/admin/transaction/{{.TransactionID}}/accept')"
                                     class="table-button">Accept</button>

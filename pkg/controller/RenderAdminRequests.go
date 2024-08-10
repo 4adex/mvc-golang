@@ -16,6 +16,7 @@ func RenderAdminRequests(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	
 	//parsing variables in view and executing them
 	username := r.Context().Value("username").(string)
 	data := map[string]interface{}{

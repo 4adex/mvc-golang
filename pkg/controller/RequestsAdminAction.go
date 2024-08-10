@@ -2,10 +2,13 @@ package controller
 
 import (
 	"database/sql"
+	"fmt"
+	// "fmt"
+	"net/http"
+
 	"github.com/4adex/mvc-golang/pkg/models"
 	"github.com/4adex/mvc-golang/pkg/views"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 func RenderViewRequests(w http.ResponseWriter, r *http.Request) {
@@ -39,27 +42,45 @@ func HandleTransactionAction(w http.ResponseWriter, r *http.Request) {
 	transaction, err := models.GetTransactionByID(transactionID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-
 			jsonResponse(w, http.StatusNotFound, "/admin/viewrequests", "Transaction not found", "error")
 			return
 		} else {
-
 			jsonResponse(w, http.StatusInternalServerError, "/admin/viewrequests", "Internal Server error", "error")
 			return
 		}
 	}
 
 	var newStatus string
-	var updateQuery string
 
 	switch action {
 	case "accept":
 		if transaction.Status == "checkout_requested" {
+			// availableCopies, _, err := models.GetBookCopies(bookIDInt)
+			// if err != nil {
+			// 	jsonResponse(w, http.StatusInternalServerError, "/", "Error retrieving book copies", "error")
+			// 	return
+			// }
+		
+			// if availableCopies < 1 {
+			// 	jsonResponse(w, http.StatusBadRequest, "/", "No available copies for checkout", "error")
+			// 	return
+			// }
+			// availableCopies, _
 			newStatus = "checkout_accepted"
-			updateQuery = "UPDATE books SET available_copies = available_copies - 1 WHERE id = ?"
+			_, err := models.DecreaseBookQuantity(transaction.BookID)
+			if err != nil {
+				jsonResponse(w, http.StatusInternalServerError, "/admin/viewrequests", "Error updating book quantity", "error")
+				return
+			}
 		} else if transaction.Status == "checkin_requested" {
 			newStatus = "returned"
-			updateQuery = "UPDATE books SET available_copies = available_copies + 1 WHERE id = ?"
+			_, err := models.IncreaseBookQuantity(transaction.BookID)
+			fmt.Println("boook is   ",transaction.BookID)
+			fmt.Println(transaction)
+			if err != nil {
+				jsonResponse(w, http.StatusInternalServerError, "/admin/viewrequests", "Error updating book quantity", "error")
+				return
+			}
 		} else {
 			jsonResponse(w, http.StatusBadRequest, "/admin/viewrequests", "Not a valid action to do on transaction", "error")
 			return
@@ -71,14 +92,6 @@ func HandleTransactionAction(w http.ResponseWriter, r *http.Request) {
 			newStatus = "checkin_rejected"
 		} else {
 			jsonResponse(w, http.StatusBadRequest, "/admin/viewrequests", "Not a valid action to do on transaction", "error")
-			return
-		}
-	}
-
-	if updateQuery != "" {
-		_, err := models.UpdateBookAvailability(transaction.BookID, updateQuery)
-		if err != nil {
-			jsonResponse(w, http.StatusInternalServerError, "/admin/viewrequests", "Internal Server error", "error")
 			return
 		}
 	}

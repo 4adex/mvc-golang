@@ -52,7 +52,7 @@ func GetBookByID(bookID int) (types.Book, error) {
     return book, nil
 }
 
-func UpdateBook(bookID, title, author, isbn, publicationYear string) error {
+func UpdateBook(bookID, title, author, isbn, publicationYear, availableCopies string) error {
     db, err := Connection()
     if err != nil {
         return err
@@ -61,10 +61,11 @@ func UpdateBook(bookID, title, author, isbn, publicationYear string) error {
 
     query := `
       UPDATE books
-      SET title = ?, author = ?, isbn = ?, publication_year = ? 
+      SET title = ?, author = ?, isbn = ?, publication_year = ?, available_copies = ?
       WHERE id = ?
     `
-    result, err := db.Exec(query, title, author, isbn, publicationYear, bookID)
+    
+    result, err := db.Exec(query, title, author, isbn, publicationYear, availableCopies, bookID)
     if err != nil {
         return err
     }
@@ -155,4 +156,61 @@ func InsertBook(title, author, isbn, publicationYear, totalCopies string) error 
 	}
 
 	return nil
+}
+
+
+// DecreaseBookQuantity decreases the quantity of available copies of a book by 1.
+func DecreaseBookQuantity(bookID string) (sql.Result, error) {
+	db, err := Connection()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	query := "UPDATE books SET available_copies = available_copies - 1 WHERE id = ?"
+	result, err := db.Exec(query, bookID)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// IncreaseBookQuantity increases the quantity of available copies of a book by 1.
+func IncreaseBookQuantity(bookID string) (sql.Result, error) {
+	db, err := Connection()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	query := "UPDATE books SET available_copies = available_copies + 1 WHERE id = ?"
+	result, err := db.Exec(query, bookID)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+
+func GetBookCopies(bookID int) (int, int, error) {
+	var availableCopies, totalCopies int
+
+	db, err := Connection()
+	if err != nil {
+		return 0, 0, err
+	}
+	defer db.Close()
+
+	query := "SELECT available_copies, total_copies FROM books WHERE id = ?"
+	err = db.QueryRow(query, bookID).Scan(&availableCopies, &totalCopies)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, 0, fmt.Errorf("book not found")
+		}
+		return 0, 0, err
+	}
+
+	return availableCopies, totalCopies, nil
 }

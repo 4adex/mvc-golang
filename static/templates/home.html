@@ -28,11 +28,13 @@
         <div class="button-group">
           <button onclick="HandleGet('/viewbooks')">View Books</button>
           <button onclick="HandleGet('/history')">View History</button>
-          <button onclick="HandleGet('/reqadmin')">Admin Request</button>
-          <button onclick="HandleGet('/viewholdings')">View Holdings</button>
           {{if eq .Role "admin"}}
             <button onclick="HandleGet('/admin/dashboard')">Admin Portal</button>
+          {{else}}
+            <button onclick="HandleGet('/reqadmin')">Admin Request</button>
           {{end}}
+          <button onclick="HandleGet('/viewholdings')">View Holdings</button>
+          
         </div>
       </main>
     </div>

@@ -31,7 +31,7 @@ func HandleCheckin(w http.ResponseWriter, r *http.Request) {
 	} else if transaction.Status == "checkin_accepted" {
 		jsonResponse(w, http.StatusBadRequest, "/", "Checkin is already accepted for this transaction", "error")
 		return
-	} else if transaction.Status != "checkout_accepted" {
+	} else if transaction.Status != "checkout_accepted" && transaction.Status != "checkin_rejected"{
 		jsonResponse(w, http.StatusBadRequest, "/", "Transaction must be checked out first", "error")
 		return
 	}

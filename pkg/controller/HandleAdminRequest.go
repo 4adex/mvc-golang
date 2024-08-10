@@ -11,7 +11,7 @@ func HandleAdminRequest(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value("id").(string)
 	role, requestStatus, err := models.GetUserRequestStatus(userID)
 	if err != nil {
-		jsonResponse(w, http.StatusInternalServerError, "/", "Internal Server Error", "error")
+		jsonResponse(w, http.StatusInternalServerError, "/", "Model se nhi aya req status", "error")
 		return
 	}
 	if role == "admin" {
@@ -21,7 +21,7 @@ func HandleAdminRequest(w http.ResponseWriter, r *http.Request) {
 	if requestStatus == "rejected" || requestStatus == "not_requested" {
 		err := models.UpdateUserRequestStatus(userID, "pending")
 		if err != nil {
-			jsonResponse(w, http.StatusInternalServerError, "/", "Internal Server Error", "error")
+			jsonResponse(w, http.StatusInternalServerError, "/", "Update nhi hora", "error")
 			return
 		}
 		jsonResponse(w, http.StatusOK, "/", "Admin request sent successfully", "success")
