@@ -3,6 +3,8 @@ package controller
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
+
 	// "fmt"
 	"net/http"
 
@@ -55,19 +57,22 @@ func HandleTransactionAction(w http.ResponseWriter, r *http.Request) {
 	switch action {
 	case "accept":
 		if transaction.Status == "checkout_requested" {
-			// availableCopies, _, err := models.GetBookCopies(bookIDInt)
-			// if err != nil {
-			// 	jsonResponse(w, http.StatusInternalServerError, "/", "Error retrieving book copies", "error")
-			// 	return
-			// }
-		
-			// if availableCopies < 1 {
-			// 	jsonResponse(w, http.StatusBadRequest, "/", "No available copies for checkout", "error")
-			// 	return
-			// }
-			// availableCopies, _
+			bookIDInt, err := strconv.Atoi(transaction.BookID)
+			if err != nil {
+				jsonResponse(w, http.StatusBadRequest, "/", "Invalid book ID", "error")
+				return
+			}
+			availableCopies, _, err := models.GetBookCopies(bookIDInt)
+			if err != nil {
+				jsonResponse(w, http.StatusInternalServerError, "/", "Error retrieving book copies", "error")
+				return
+			}
+			if availableCopies<1 {
+				jsonResponse(w, http.StatusBadRequest, "/admin/viewrequests", "No available copies to checkout", "error")
+				return
+			}
 			newStatus = "checkout_accepted"
-			_, err := models.DecreaseBookQuantity(transaction.BookID)
+			_, err = models.DecreaseBookQuantity(transaction.BookID)
 			if err != nil {
 				jsonResponse(w, http.StatusInternalServerError, "/admin/viewrequests", "Error updating book quantity", "error")
 				return

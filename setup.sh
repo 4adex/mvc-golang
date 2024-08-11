@@ -14,11 +14,13 @@ read -s MYSQL_PASSWORD
 
 echo "Creating the database ------------------"
 mysql -u root -p$MYSQL_PASSWORD << EOF
-CREATE DATABASE IF NOT EXISTS library_management;
+DROP DATABASE IF EXISTS library_management;
+CREATE DATABASE library_management;
 USE library_management;
 EOF
 
 # Run migrations
+echo "Running migrations ---------------------"
 echo "Enter your MySQL username:"
 read MYSQL_USERNAME
 

@@ -1,54 +1,375 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Suwannaphum:wght@100;300;400;700;900&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/static/css/styles.css" />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ShelfMaster</title>
-    <script src="/static/scripts/script.js"></script>
-  </head>
-  <body>
-    <div class="container">
-      <header>
-        <div class="header-content">
-          <h1 class="logo">ShelfMaster</h1>
-          <div>
-            <button class="logout" onclick="HandleGet('/signup')">Signup</button>
-            <button class="logout" onclick="HandleGet('/signin')">Login</button>
+
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Suwannaphum:wght@100;300;400;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShelfMaster</title>
+  <script src="/static/scripts/script.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      /* justify-content: center; */
+      padding-top: 100px;
+      align-items: center;
+      font-family: "Suwannaphum", serif;
+      background: #0C0B10;
+      color: #fff;
+
+    }
+
+    .suwannaphum-thin {
+      font-family: "Suwannaphum", serif;
+      font-weight: 100;
+      font-style: normal;
+    }
+
+    .suwannaphum-light {
+      font-family: "Suwannaphum", serif;
+      font-weight: 300;
+      font-style: normal;
+    }
+
+    .suwannaphum-regular {
+      font-family: "Suwannaphum", serif;
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    .suwannaphum-bold {
+      font-family: "Suwannaphum", serif;
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    .suwannaphum-black {
+      font-family: "Suwannaphum", serif;
+      font-weight: 900;
+      font-style: normal;
+    }
+
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      border-radius: 22px;
+      background: #1F1E25;
+      padding: 10px 30px 10px;
+    }
+
+    .logo {
+      color: #4C71F1;
+      text-align: center;
+      font-family: Suwannaphum;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+    }
+
+    .logout {
+      color: #4C71F1;
+      background: none;
+      text-align: center;
+      font-family: Suwannaphum;
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    .user-call {
+      color: #818181;
+      text-align: center;
+      font-family: Suwannaphum;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      margin: 0;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-label {
+      color: #FFF;
+      text-align: center;
+      font-family: Suwannaphum;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    .form-element {
+      width: 500px;
+    }
+
+
+
+    input[type=email],
+    select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      border-radius: 7px;
+      border: 1px solid #878787;
+      background: #1F1E25;
+      color: #828282;
+      font-family: Suwannaphum;
+      font-size: 14px;
+      font-style: normal;
+    }
+
+    input[type=text],
+    select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      border-radius: 7px;
+      border: 1px solid #878787;
+      background: #1F1E25;
+      color: #828282;
+      font-family: Suwannaphum;
+      font-size: 14px;
+      font-style: normal;
+    }
+
+    input[type=number],
+    select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      border-radius: 7px;
+      border: 1px solid #878787;
+      background: #1F1E25;
+      color: #828282;
+      font-family: Suwannaphum;
+      font-size: 14px;
+      font-style: normal;
+    }
+
+    input[type=password],
+    select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      border-radius: 7px;
+      border: 1px solid #878787;
+      background: #1F1E25;
+      color: #828282;
+      font-family: Suwannaphum;
+      font-size: 14px;
+      font-style: normal;
+    }
+
+    h1 {
+      color: #FFF;
+      text-align: center;
+      font-family: Suwannaphum;
+      font-size: 36px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+    }
+
+    button {
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 22px;
+      background: #1F1E25;
+    }
+
+    .button-group {
+      min-width: 520px;
+      max-width: 560px;
+      border-radius: 13px;
+      background: #151419;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 40px 15px 40px;
+    }
+
+    .content {
+      width: 900px;
+      border-radius: 13px;
+      background: #151419;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 40px 15px 40px;
+    }
+
+    .table-td {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    #unavailable {
+      color: #D36565;
+    }
+
+    #disabled-button {
+      background: #363534;
+      color: #898383;
+    }
+
+    #author {
+      color: #939393;
+    }
+
+    #status {
+      color: #939393;
+    }
+
+    #date {
+      color: #939393;
+      font-size: 12px;
+    }
+
+
+
+    .button-group button {
+      margin: 5px;
+      border-radius: 10px;
+      background: #4C71F1;
+      width: 240px;
+      height: 50px;
+      color: #FFF;
+      text-align: center;
+      font-family: Suwannaphum;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      /* flex-shrink: 0; */
+    }
+
+    .table-button {
+      margin: 5px;
+      border-radius: 7px;
+      background: #4C71F1;
+      width: 120px;
+      height: 40px;
+      color: #FFF;
+      text-align: center;
+      font-family: Suwannaphum;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    .admin-button {
+      margin: 5px;
+      border-radius: 7px;
+      background: #4C71F1;
+      width: 140px;
+      height: 60px;
+      color: #FFF;
+      text-align: center;
+      font-family: Suwannaphum;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+
+    }
+
+    .alert {
+      padding: 20px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      border: 1px solid transparent;
+      border-radius: 22px;
+    }
+
+    .alert-success {
+      color: #82D365;
+      border: 1px solid #82D365;
+      background: #1A4213;
+    }
+
+    .alert-error {
+      color: #D36565;
+      border: 1px solid #D36565;
+      background: #461919;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1 class="logo">ShelfMaster</h1>
+        <div>
+          <button class="logout" onclick="HandleGet('/signup')">Signup</button>
+          <button class="logout" onclick="HandleGet('/signin')">Login</button>
+        </div>
+      </div>
+    </header>
+    <div id="message-div"></div>
+    <main class="main-content">
+      <h1>Create New Account</h1>
+      <div class="button-group">
+        <form id="signupForm">
+          <div class="form-element">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" placeholder="Enter email" required />
           </div>
-        </div>
-      </header>
-      <div id="message-div"></div>
-      <main class="main-content">
-        <h1>Create New Account</h1>
-        <div class="button-group">
-          <form id="signupForm">
-            <div class="form-element">
-              <label class="form-label">Email</label>
-              <input type="email" name="email" placeholder="Enter email" required />
-            </div>
-            <div class="form-element">
-              <label class="form-label">Username</label>
-              <input type="text" name="username" placeholder="Enter unique username" required />
-            </div>
-            <div class="form-element">
-              <label class="form-label">Password</label>
-              <input type="password" name="password" placeholder="Password" required />
-            </div>
-            <button class="submit-button" type="submit">Submit</button>
-          </form>
-        </div>
-      </main>
-    </div>
-    <script>
-      // var delay = 100;
-      function displayFlashMessage() {
+          <div class="form-element">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" placeholder="Enter unique username" required />
+          </div>
+          <div class="form-element">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" placeholder="Password" required />
+          </div>
+          <div class="form-element">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" id="cpassword" name="cpassword" placeholder="Confirm Password" required />
+          </div>
+          <button class="submit-button" type="submit">Submit</button>
+        </form>
+      </div>
+    </main>
+  </div>
+  <script>
+    // var delay = 100;
+    function displayFlashMessage() {
       // alert("Youtube");
       const flashMessage = localStorage.getItem('flashMessage');
       const flashType = localStorage.getItem('flashType');
@@ -98,31 +419,45 @@
         }
       }
     };
-      document.getElementById('signupForm').onsubmit = async function (event) {
-        event.preventDefault();
-        const formData = new FormData(this);
-        try {
-          const response = await fetch('/signup', {
-            method: 'POST',
-            body: new URLSearchParams(formData),
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            }
-          });
-          const data = await response.json();
-          if (data.flashMessage && data.flashType) {
-            // Store flash message in localStorage
-            localStorage.setItem('flashMessage', data.flashMessage);
-            localStorage.setItem('flashType', data.flashType);
-        }
-          if (data.redirect) {
-            window.location.href = data.redirect;
+    document.getElementById('signupForm').onsubmit = async function (event) {
+      event.preventDefault();
+      const password = document.querySelector('input[name="password"]').value;
+      const confirmPassword = document.querySelector('input[name="cpassword"]').value;
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      if (password.length < 8) {
+        alert("Password must be at least 8 characters long.");
+        return;
+      }
+
+      const formData = new FormData(this);
+      try {
+        const response = await fetch('/signup', {
+          method: 'POST',
+          body: new URLSearchParams(formData),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
           }
-        } catch (error) {
-          console.error('Error:', error);
+        });
+        const data = await response.json();
+        if (data.flashMessage && data.flashType) {
+          // Store flash message in localStorage
+          localStorage.setItem('flashMessage', data.flashMessage);
+          localStorage.setItem('flashType', data.flashType);
         }
-      };
-      document.addEventListener('DOMContentLoaded', displayFlashMessage);
-    </script>
-  </body>
+        if (data.redirect) {
+          window.location.href = data.redirect;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+    document.addEventListener('DOMContentLoaded', displayFlashMessage);
+  </script>
+</body>
+
 </html>
